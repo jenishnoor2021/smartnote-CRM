@@ -40,26 +40,51 @@ class FrontController extends Controller
             ->take(6)
             ->get();
 
-        // English Medium Subjects / Subcategories (Books by Series)
-        $englishSubjects = SubCategory::where('category_id', 13)
+        // English Medium Subjects / Subcategories (Dynamic by Category Name)
+        $englishSubjects = SubCategory::whereHas('category', function ($query) {
+                $query->where(function ($q) {
+                    $q->where('category_name', 'like', '%English%')
+                      ->orWhere('category_name', 'like', '%Workbook%');
+                })->where('is_active', 1);
+            })
             ->where('is_active', 1)
+            ->orderBy('sort_order', 'ASC')
             ->orderBy('id', 'ASC')
             ->take(12)
             ->get();
+
         if ($englishSubjects->isEmpty()) {
-            $englishSubjects = SubCategory::whereIn('category_id', [9, 10])
+            $englishSubjects = SubCategory::whereHas('products', function ($query) {
+                    $query->where('medium', 'like', '%English%')->where('is_active', 1);
+                })
                 ->where('is_active', 1)
+                ->orderBy('sort_order', 'ASC')
                 ->orderBy('id', 'ASC')
                 ->take(12)
                 ->get();
         }
 
-        // Gujarati Medium Subjects / Subcategories
-        $gujaratiSubjects = SubCategory::whereIn('category_id', [11, 12])
+        // Gujarati Medium Subjects / Subcategories (Dynamic by Category Name)
+        $gujaratiSubjects = SubCategory::whereHas('category', function ($query) {
+                $query->where('category_name', 'like', '%Gujarati%')
+                      ->where('is_active', 1);
+            })
             ->where('is_active', 1)
+            ->orderBy('sort_order', 'ASC')
             ->orderBy('id', 'ASC')
             ->take(12)
             ->get();
+
+        if ($gujaratiSubjects->isEmpty()) {
+            $gujaratiSubjects = SubCategory::whereHas('products', function ($query) {
+                    $query->where('medium', 'like', '%Gujarati%')->where('is_active', 1);
+                })
+                ->where('is_active', 1)
+                ->orderBy('sort_order', 'ASC')
+                ->orderBy('id', 'ASC')
+                ->take(12)
+                ->get();
+        }
 
         // Best Selling Series Books Carousel
         $seriesBooks = Product::where('is_active', 1)

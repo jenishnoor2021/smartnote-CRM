@@ -160,7 +160,7 @@
                 <i class="fa-solid fa-star"></i>
               </div>
               <h4 class="offer-title">Premium Educational Book Series – English Medium</h4>
-              <a class="vs-btn" href="{{ route('front.product.index', ['category' => 9]) }}">Explore More</a>
+              <a class="vs-btn" href="{{ route('front.product.index', ['medium' => 'English']) }}">Explore More</a>
             </div>
             <span class="shape-mockup element1 z-index1 d-xxl-block d-none" data-wow-delay="0.80s" style="right: 0px; bottom: -5px;">
               <img src="{{ asset('assets/img/shapes/offer-shape1.png') }}" alt="offer shape">
@@ -181,7 +181,7 @@
                 <i class="fa-solid fa-star"></i>
               </div>
               <h4 class="offer-title">Gujarati Medium Academic Excellence Series</h4>
-              <a class="vs-btn" href="{{ route('front.product.index', ['category' => 11]) }}">Explore More</a>
+              <a class="vs-btn" href="{{ route('front.product.index', ['medium' => 'Gujarati']) }}">Explore More</a>
             </div>
             <span class="shape-mockup element1 z-index1 d-xxl-block d-none" data-wow-delay="0.80s" style="right: 0px; bottom: -5px;">
               <img src="{{ asset('assets/img/shapes/offer-shape2.png') }}" alt="offer shape">
@@ -199,7 +199,7 @@
     <div class="container space-bottom position-relative">
       <div class="title-area2 animation-style1 title-anime">
         <h2 class="sec-title title-anime__title">Top Categories - English Version</h2>
-        <a class="vs-btn wow animate__flipInX" data-wow-delay="0.70s" href="{{ route('front.product.index', ['category' => 10]) }}">View More</a>
+        <a class="vs-btn wow animate__flipInX" data-wow-delay="0.70s" href="{{ route('front.product.index', ['medium' => 'English']) }}">View More</a>
       </div>
       <div class="row g-4">
         @php
@@ -319,7 +319,7 @@
     <div class="container space-bottom position-relative">
       <div class="title-area2 animation-style1 title-anime">
         <h2 class="sec-title title-anime__title">Top Categories - Gujarati Version</h2>
-        <a class="vs-btn wow animate__flipInX" data-wow-delay="0.70s" href="{{ route('front.product.index', ['category' => 12]) }}">View More</a>
+        <a class="vs-btn wow animate__flipInX" data-wow-delay="0.70s" href="{{ route('front.product.index', ['medium' => 'Gujarati']) }}">View More</a>
       </div>
       <div class="row g-4">
         @php

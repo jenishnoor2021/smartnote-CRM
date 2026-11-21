@@ -92,13 +92,13 @@
                     </button>
                   @endforeach
                 @else
-                  @for($i = 1; $i <= 8; $i++)
+                  <!-- @for($i = 1; $i <= 8; $i++)
                     @if(file_exists(public_path('assets/img/book/pg/pg-' . $i . '.png')))
                       <button type="button" class="sn-gallery-thumb" aria-label="View {{ $product->product_name }} page {{ $i }}" aria-pressed="false">
                         <img src="{{ asset('assets/img/book/pg/pg-' . $i . '.png') }}" alt="{{ $product->product_name }} page {{ $i }}" loading="lazy">
                       </button>
                     @endif
-                  @endfor
+                  @endfor -->
                 @endif
               </div>
               <button type="button" class="sn-gallery-scroll" data-direction="1" aria-label="Scroll to next thumbnails"><span aria-hidden="true">&#8250;</span></button>
