@@ -1,0 +1,13 @@
+.sn-workbook-listing .product-img::after {
+  pointer-events: none;
+}
+
+.sn-workbook-listing .product-img > a {
+  display: block;
+}
+
+.sn-workbook-listing .product-img > a:focus-visible {
+  outline: 3px solid var(--theme-color);
+  outline-offset: 3px;
+  border-radius: 15px;
+}

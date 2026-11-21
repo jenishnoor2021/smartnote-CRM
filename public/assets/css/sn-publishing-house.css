@@ -1,0 +1,73 @@
+.sn-publishing-house .breadcumb-wrapper {
+  background: linear-gradient(120deg, #e0f5f0, #edf0ff 55%, #fff0d8) !important;
+}
+.sn-publishing-house #publication-section-1 img {
+  border: 8px solid #fff;
+  animation: sn-house-book-float 6s ease-in-out infinite;
+}
+.sn-publishing-house #publication-section-1 .publication-content p:nth-last-child(2) {
+  padding: 12px 16px;
+  border-left: 3px solid #16858b;
+  border-radius: 0 12px 12px 0;
+  background: #e6f6f1;
+}
+.sn-publishing-house .publication-content ul.row {
+  padding-left: 0 !important;
+  list-style: none;
+  margin-bottom: 16px;
+}
+.sn-publishing-house .publication-content ul.row > li { margin-bottom: 0 !important; }
+.sn-publishing-house .publication-content li > p {
+  height: 100%;
+  margin: 0 !important;
+  padding: 18px;
+  border: 1px solid #e0e7ef;
+  border-top: 3px solid var(--sn-accent);
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 4px 12px #21375106;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.sn-publishing-house .publication-content li > p:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px #21375112;
+}
+.sn-publishing-house .publication-content li i { display: grid; margin-bottom: 10px; }
+.sn-publishing-house .sn-publication-grid .publication-content li > p {
+  padding: 12px 14px;
+  border-top: 1px solid #e0e7ef;
+  border-left: 3px solid var(--sn-accent);
+}
+.sn-publishing-house .sn-publication-grid .publication-content li i {
+  float: left;
+  width: 30px;
+  height: 30px;
+  font-size: 15px !important;
+}
+.sn-publishing-house #publication-section-9 { grid-column: 1 / -1; }
+.sn-publishing-house #publication-section-9 .h4 i { color: var(--sn-accent) !important; }
+.sn-publishing-house #sn-house-faq {
+  margin-top: 20px;
+  background: linear-gradient(180deg, #f0f5fb, #fcfcff);
+  border-top: 1px solid #e6ebf3;
+}
+.sn-publishing-house #sn-house-faq .col-lg-10 { width: 100%; }
+.sn-publishing-house #sn-house-faq .title-area { margin-bottom: 24px; }
+.sn-publishing-house #publicationFaq .accordion-button:focus-visible {
+  outline: 3px solid #147f88;
+  outline-offset: -3px;
+}
+@keyframes sn-house-book-float {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-7px) rotate(1deg); }
+}
+@media (min-width: 1200px) {
+  .sn-publishing-house #publication-section-2 .publication-content li { width: 25%; }
+}
+@media (max-width: 767.98px) {
+  .sn-publishing-house .publication-content li > p { padding: 16px; }
+  .sn-publishing-house #publication-section-1 img { max-height: 220px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sn-publishing-house #publication-section-1 img { animation: none; }
+}

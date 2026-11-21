@@ -1,0 +1,14 @@
+/* Mobile product filter drawer; desktop sidebar stays unchanged. */
+.sn-filter-trigger,.sn-filter-heading,.sn-filter-backdrop{display:none}
+@media(max-width:991.98px){
+ .sn-filter-trigger{display:inline-flex;align-items:center;gap:10px;margin:0 0;padding:12px 22px;border:0;border-radius:8px;background:#253b78;color:#fff;font-weight:600;cursor:pointer}
+ .sn-filter-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99997;opacity:0;visibility:hidden;display:block;transition:opacity .25s,visibility .25s}
+ .sn-filter-column{position:fixed!important;right:0;top:0;bottom:0;width:min(360px,90vw)!important;max-width:none!important;z-index:99998;background:#fff;overflow-y:auto;overscroll-behavior:contain;transform:translateX(105%);visibility:hidden;transition:transform .3s ease,visibility .3s; padding:0 18px 28px!important;box-shadow:-8px 0 24px rgba(0,0,0,.12)}
+ .sn-filter-heading{display:flex;position:sticky;top:0;z-index:2;align-items:center;justify-content:space-between;background:#fff;padding:18px 0;border-bottom:1px solid #eee;margin-bottom:20px}
+ .sn-filter-close{background:transparent;border:0;font-size:24px;padding:4px 8px;cursor:pointer}
+ body.sn-filters-open{overflow:hidden}
+ body.sn-filters-open .sn-filter-column{transform:translateX(0);visibility:visible}
+ body.sn-filters-open .sn-filter-backdrop{opacity:1;visibility:visible}
+ .sn-filter-column .widget{max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){.sn-filter-column,.sn-filter-backdrop{transition:none!important}}

@@ -1,0 +1,57 @@
+.sn-signup {
+  width: min(460px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 24px;
+  background: #fff;
+  color: #08477f;
+  box-shadow: 0 28px 90px #002b5560;
+  overscroll-behavior: contain;
+}
+.sn-signup::backdrop { background: #002749a6; backdrop-filter: blur(5px); }
+html.sn-signup-open, html.sn-signup-open body { overflow: hidden; }
+.sn-signup-panel { position: relative; padding: 36px; border-top: 5px solid var(--theme-color); }
+.sn-signup-close {
+  position: absolute; right: 14px; top: 12px; width: 36px; height: 36px;
+  border: 0; border-radius: 50%; background: #edf5fc; color: #08477f;
+}
+.sn-signup-intro { text-align: center; }
+.sn-signup-emblem {
+  display: grid; place-items: center; width: 60px; height: 60px; margin: 0 auto 16px;
+  border-radius: 20px; background: #eaf6ff; color: var(--theme-color); font-size: 26px;
+  box-shadow: 5px 5px 0 #e2ab1826;
+}
+.sn-signup-eyebrow { display: block; font-size: 10px; font-weight: 600; letter-spacing: 1.6px; color: var(--theme-color); }
+.sn-signup h2 { margin: 10px 0 4px; font-size: 34px; color: #08477f; }
+.sn-signup-intro p { margin: 0 0 24px; font-size: 13px; line-height: 1.7; color: #64778a; }
+.sn-signup-field { margin-bottom: 17px; }
+.sn-signup-field label { display: block; margin-bottom: 7px; font-size: 13px; font-weight: 500; color: #254c6d; }
+.sn-signup-input { display: flex; align-items: center; border: 1px solid #dce7f1; border-radius: 12px; background: #f5f9fd; transition: border-color .2s, box-shadow .2s; }
+.sn-signup-input:focus-within { border-color: var(--theme-color); box-shadow: 0 0 0 3px #0066c714; }
+.sn-signup-input > i { margin-left: 16px; font-size: 14px; color: #6594bb; }
+.sn-signup-input input { flex: 1; width: 0; min-width: 0; height: 52px; padding: 0 12px; margin: 0; border: 0; border-radius: 12px; background: transparent; color: #163b5c; font-size: 13px; box-shadow: none; }
+.sn-signup-input input:focus { outline: none; background: transparent; }
+.sn-signup-input input::placeholder { color: #8495a5; }
+.sn-signup-toggle { flex: 0 0 44px; height: 44px; padding: 0; border: 0; background: transparent; color: #65849f; }
+.sn-signup-field small { display: block; margin-top: 5px; color: #718496; font-size: 11px; }
+.sn-signup-submit { display: flex; justify-content: center; align-items: center; gap: 14px; width: 100%; margin-top: 24px; border-radius: 12px; padding: 18px 20px; }
+.sn-signup-footnote { margin: 22px 0 0; padding-top: 18px; border-top: 1px solid #e8eff5; color: #718496; text-align: center; font-size: 11px; }
+.sn-signup-footnote i { margin-right: 5px; color: #d7a300; }
+.sn-signup-signin { margin: 14px 0 0; text-align: center; font-size: 13px; color: #718496; }
+.sn-signup-signin a { color: var(--theme-color); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.sn-signup-signin a:focus-visible { outline: 2px solid var(--theme-color); outline-offset: 4px; }
+.sn-signup-status { margin: 16px 0 0; padding: 12px; background: #eef6fd; border-radius: 8px; font-size: 12px; line-height: 1.7; color: #08477f; }
+.sn-signup button:focus-visible { outline: 3px solid #dba700; outline-offset: 3px; }
+.sn-signin-help { text-align: right; margin-top: -5px; }
+.sn-signin-forgot { padding: 4px 0; border: 0; background: transparent; color: var(--theme-color); font-size: 12px; font-weight: 500; }
+.sn-signin-forgot:hover { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 480px) {
+  .sn-signup-panel { padding: 30px 22px 22px; }
+  .sn-signup h2 { font-size: 30px; }
+}
+@media (max-height: 650px) {
+  .sn-signup-panel { padding-top: 24px; }
+  .sn-signup-emblem { display: none; }
+}

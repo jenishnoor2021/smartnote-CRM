@@ -1,0 +1,300 @@
+/* ==========================================================================
+   SMART NOTES PUBLICATION - Buy Now / Direct Order Modal
+   ========================================================================== */
+
+.sn-order-modal {
+  z-index: 100020 !important;
+}
+
+body.sn-order-modal-open > .modal-backdrop {
+  z-index: 100019 !important;
+  opacity: 0.65;
+}
+
+body.sn-order-modal-open .sn-floating-order,
+body.sn-order-modal-open .sn-floating-whatsapp,
+body.sn-order-modal-open .back-to-top {
+  visibility: hidden !important;
+}
+
+.sn-order-modal .modal-dialog {
+  max-width: 720px;
+  margin: 20px auto;
+  padding: 0 12px;
+}
+
+.sn-order-modal .modal-content {
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.28);
+  background: #ffffff;
+}
+
+.sn-order-modal .modal-header {
+  background: linear-gradient(135deg, #084b87 0%, #0e6bc4 100%);
+  color: #ffffff;
+  padding: 20px 24px;
+  border-bottom: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.sn-order-modal .modal-header .modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sn-order-modal .modal-header .sn-order-modal-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 4px;
+  margin-bottom: 0;
+  font-weight: 400;
+}
+
+.sn-order-modal .modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+  opacity: 0.85;
+  transition: opacity 0.2s;
+  margin: 0;
+  padding: 8px;
+}
+
+.sn-order-modal .modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+.sn-order-modal .modal-body {
+  padding: 24px;
+  max-height: calc(85vh - 130px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Custom scrollbar for order modal */
+.sn-order-modal .modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.sn-order-modal .modal-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+}
+
+/* Order Summary Box */
+.sn-order-summary-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sn-order-summary-box .sn-order-book-img {
+  width: 65px;
+  height: 85px;
+  object-fit: contain;
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.sn-order-summary-box .sn-order-book-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+
+.sn-order-summary-box .sn-order-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.sn-order-summary-box .sn-order-price-tag {
+  color: #084b87;
+  font-weight: 700;
+}
+
+.sn-order-summary-box .sn-order-total-tag {
+  font-size: 17px;
+  font-weight: 800;
+  color: #e05328;
+  margin-left: auto;
+}
+
+/* Inside-Modal Quantity Controls */
+.sn-order-modal-qty {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  overflow: hidden;
+  margin-left: 6px;
+}
+
+.sn-order-modal-qty button {
+  background: #f1f5f9;
+  border: none;
+  padding: 2px 8px;
+  font-size: 12px;
+  color: #334155;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.sn-order-modal-qty button:hover {
+  background: #e2e8f0;
+}
+
+.sn-order-modal-qty span {
+  padding: 2px 10px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+/* Form Styles */
+.sn-order-modal .form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.sn-order-modal .form-control {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 14px;
+  color: #1e293b;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+}
+
+.sn-order-modal .form-control:focus {
+  border-color: #084b87;
+  box-shadow: 0 0 0 3px rgba(8, 75, 135, 0.15);
+  outline: none;
+}
+
+.sn-order-modal textarea.form-control {
+  min-height: 70px;
+  resize: vertical;
+}
+
+/* Trust Badges */
+.sn-order-trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.sn-order-trust-badges span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+/* Buttons */
+.sn-order-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.sn-order-submit-btn {
+  background: #084b87 !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 14px 28px !important;
+  border-radius: 30px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-shadow: 0 4px 14px rgba(8, 75, 135, 0.35) !important;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+
+.sn-order-submit-btn:hover {
+  background: #063968 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(8, 75, 135, 0.45) !important;
+}
+
+.sn-order-cancel-btn {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid #e2e8f0 !important;
+  padding: 14px 22px !important;
+  border-radius: 30px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+}
+
+.sn-order-cancel-btn:hover {
+  background: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+@media (max-width: 575px) {
+  .sn-order-modal .modal-dialog {
+    margin: 10px;
+    padding: 0;
+  }
+  .sn-order-modal .modal-header,
+  .sn-order-modal .modal-body {
+    padding: 16px;
+  }
+  .sn-order-summary-box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .sn-order-summary-box .sn-order-total-tag {
+    margin-left: 0;
+    margin-top: 4px;
+  }
+  .sn-order-actions-bar {
+    flex-direction: column-reverse;
+  }
+  .sn-order-actions-bar button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+

@@ -1,0 +1,68 @@
+/* Only the two detail pages load these purchase-action styles. */
+.vs-product-wrapper .product-about .sn-product-actions {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1fr) 50px 50px;
+  gap: 10px;
+}
+
+.vs-product-wrapper .product-about .sn-product-actions .vs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 12px 10px;
+  font-size: 14px;
+  line-height: 1.3;
+  letter-spacing: 0;
+  white-space: nowrap;
+  border-radius: 30px;
+}
+
+.vs-product-wrapper .product-about .sn-product-actions .vs-btn i {
+  margin: 0;
+}
+
+.vs-product-wrapper .product-about .sn-product-actions .sn-buy-now {
+  background: #084b87;
+}
+
+.vs-product-wrapper .product-about .sn-product-actions .icon-btn {
+  width: 50px;
+  height: 50px;
+  border: 0;
+  border-radius: 50%;
+}
+
+.sn-product-actions a:focus-visible {
+  outline: 3px solid #e6ac00;
+  outline-offset: 3px;
+}
+
+/* Keep the quantity and utility icons together; purchase links fill a second row. */
+@media (min-width: 992px) and (max-width: 1399.98px), (max-width: 767.98px) {
+  .vs-product-wrapper .product-about .sn-product-actions {
+    grid-template-columns: minmax(150px, 1fr) 50px 50px;
+  }
+
+  .sn-product-actions .quantity {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  .sn-product-actions .sn-inquiry-open {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .sn-product-actions .icon-btn:last-child {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .vs-product-wrapper .product-about .sn-product-actions .sn-add-to-cart,
+  .vs-product-wrapper .product-about .sn-product-actions .sn-buy-now {
+    grid-column: 1 / -1;
+  }
+}
