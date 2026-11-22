@@ -17,12 +17,21 @@
         <div class="col-xl-2 col-md-4 col-sm-6">
           <div class="product-style1 wow animate__fadeInUp" data-wow-delay="{{ 0.20 + ($index * 0.10) }}s">
                <div class="product-img">
+                  @php
+                      $trendFallbacks = [
+                          'assets/img/book/eng-workbook.png',
+                          'assets/img/book/computer-four.png',
+                          'assets/img/book/maths-four.png',
+                          'assets/img/book/evs-second.png',
+                          'assets/img/book/hindi-five.png',
+                          'assets/img/book/science-seven.png',
+                      ];
+                      $tImg = !empty($prod->cover_image)
+                          ? $prod->cover_image
+                          : $trendFallbacks[$index % count($trendFallbacks)];
+                  @endphp
                   <a href="{{ route('front.product.show', $prod->id) }}">
-                      @if($prod->cover_image && file_exists(public_path($prod->cover_image)))
-                          <img src="{{ asset($prod->cover_image) }}" alt="{{ $prod->product_name }}" style="max-height: 220px; object-fit: contain;" />
-                      @else
-                          <img src="{{ asset('assets/img/book/evs-second.png') }}" alt="{{ $prod->product_name }}" style="max-height: 220px; object-fit: contain;" />
-                      @endif
+                      <img src="{{ asset($tImg) }}" alt="{{ $prod->product_name }}" style="max-height: 220px; object-fit: contain;" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/eng-workbook.png') }}';" />
                   </a>
                   <div class="product-btns">
                     <button type="button" class="icon-btn cart btn-add-to-cart-quick" data-id="{{ $prod->id }}" title="Add to Cart">

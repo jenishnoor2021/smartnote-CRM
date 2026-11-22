@@ -204,7 +204,7 @@
                      <!-- Main Cover Image -->
                      <div class="col-md-6">
                         <div class="form-group" style="margin-bottom: 15px;">
-                           <label class="text-semibold">{{ __('Main Cover Image') }}:</label>
+                           <label class="text-semibold">{{ __('Main Cover Image') }}: <span class="text-danger">*</span></label>
                            
                            <div style="border: 2px dashed #b2dfdb; border-radius: 6px; padding: 20px; background: #fafdfd; text-align: center; min-height: 220px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                               
@@ -231,6 +231,8 @@
                                  </div>
                               </div>
                            </div>
+
+                           <div id="cover_image_error_box"></div>
 
                            @error('cover_image')
                            <div class="text-danger mt-1 mb-1">{{ $message }}</div>
@@ -354,6 +356,7 @@
     * ======================================================== */
    function handleCoverSelect(input) {
       if (input.files && input.files[0]) {
+         $('#cover_image_error_box').empty();
          var reader = new FileReader();
          reader.onload = function(e) {
             $('#cover_preview_img').attr('src', e.target.result);
@@ -370,6 +373,7 @@
       $('#cover_preview_img').attr('src', '');
       $('#cover_preview_wrapper').hide();
       $('#cover_upload_placeholder').fadeIn(200);
+      $('#cover_image_error_box').html('<label class="validation-error-label text-danger" style="display: block; margin-top: 6px;"><i class="icon-cancel-circle2 position-left"></i>{{ __("Cover image is required.") }}</label>');
    }
 
    /* ========================================================
@@ -498,6 +502,14 @@
             mrp_price: { number: true, min: 0 }
          },
          submitHandler: function(form) {
+            var coverInput = document.getElementById('cover_image');
+            if (!coverInput.files || coverInput.files.length === 0) {
+               $('#cover_image_error_box').html('<label class="validation-error-label text-danger" style="display: block; margin-top: 6px;"><i class="icon-cancel-circle2 position-left"></i>{{ __("Please choose a cover image for the product.") }}</label>');
+               $('html, body').animate({
+                  scrollTop: $("#cover_upload_placeholder").offset().top - 120
+               }, 300);
+               return false;
+            }
             form.submit();
          }
       });

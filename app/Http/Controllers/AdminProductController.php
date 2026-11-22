@@ -82,12 +82,16 @@ class AdminProductController extends Controller
             'selling_price' => 'required|numeric|min:0',
             'unit' => 'nullable|string|max:50',
             'stock_quantity' => 'nullable|integer|min:0',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'cover_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ], [
             'category_id.required' => 'Please select a category.',
             'product_name.required' => 'Please enter product name.',
             'selling_price.required' => 'Please enter selling price.',
+            'cover_image.required' => 'Cover image is required.',
+            'cover_image.image' => 'Cover file must be a valid image.',
+            'cover_image.mimes' => 'Cover image must be a file of type: jpeg, png, jpg, gif, svg, webp.',
+            'cover_image.max' => 'Cover image size must not exceed 2MB.',
         ]);
 
         if ($validator->fails()) {
@@ -178,6 +182,11 @@ class AdminProductController extends Controller
         $product = Product::findOrFail($id);
         $input = $request->all();
 
+        // If product has no cover image yet, require it; otherwise optional on update
+        $coverRule = empty($product->cover_image)
+            ? 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048'
+            : 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048';
+
         $validator = Validator::make($request->all(), [
             'category_id' => 'required|integer|exists:categories,id',
             'subcategory_id' => 'nullable|integer|exists:sub_categories,id',
@@ -191,12 +200,16 @@ class AdminProductController extends Controller
             'selling_price' => 'required|numeric|min:0',
             'unit' => 'nullable|string|max:50',
             'stock_quantity' => 'nullable|integer|min:0',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'cover_image' => $coverRule,
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ], [
             'category_id.required' => 'Please select a category.',
             'product_name.required' => 'Please enter product name.',
             'selling_price.required' => 'Please enter selling price.',
+            'cover_image.required' => 'Cover image is required.',
+            'cover_image.image' => 'Cover file must be a valid image.',
+            'cover_image.mimes' => 'Cover image must be a file of type: jpeg, png, jpg, gif, svg, webp.',
+            'cover_image.max' => 'Cover image size must not exceed 2MB.',
         ]);
 
         if ($validator->fails()) {

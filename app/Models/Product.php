@@ -87,10 +87,10 @@ class Product extends Model
      */
     public function getCoverImageUrlAttribute()
     {
-        if ($this->cover_image && file_exists(public_path($this->cover_image))) {
+        if (!empty($this->cover_image)) {
             return asset($this->cover_image);
         }
-        return null;
+        return asset('assets/img/book/eng-workbook.png');
     }
 }
 

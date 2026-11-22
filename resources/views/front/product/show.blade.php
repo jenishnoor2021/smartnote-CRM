@@ -74,21 +74,21 @@
               <button type="button" class="sn-gallery-scroll" data-direction="-1" aria-label="Scroll to previous thumbnails"><span aria-hidden="true">&#8249;</span></button>
               <div class="sn-gallery-thumbnails" data-lenis-prevent>
                 @php
-                  $mainImgUrl = ($product->cover_image && file_exists(public_path($product->cover_image))) 
+                  $mainImgUrl = !empty($product->cover_image) 
                     ? asset($product->cover_image) 
                     : asset('assets/img/book/pg-6.png');
                 @endphp
                 <button type="button" class="sn-gallery-thumb" aria-label="View {{ $product->product_name }} cover" aria-pressed="true">
-                  <img src="{{ $mainImgUrl }}" alt="{{ $product->product_name }} cover" loading="lazy">
+                  <img src="{{ $mainImgUrl }}" alt="{{ $product->product_name }} cover" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/pg-6.png') }}';">
                 </button>
 
                 @if($product->images && $product->images->count() > 0)
                   @foreach($product->images as $idx => $gImg)
                     @php
-                      $gUrl = ($gImg->image && file_exists(public_path($gImg->image))) ? asset($gImg->image) : $mainImgUrl;
+                      $gUrl = !empty($gImg->image) ? asset($gImg->image) : $mainImgUrl;
                     @endphp
                     <button type="button" class="sn-gallery-thumb" aria-label="View {{ $product->product_name }} page {{ $idx + 1 }}" aria-pressed="false">
-                      <img src="{{ $gUrl }}" alt="{{ $product->product_name }} preview {{ $idx + 1 }}" loading="lazy">
+                      <img src="{{ $gUrl }}" alt="{{ $product->product_name }} preview {{ $idx + 1 }}" loading="lazy" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/pg-6.png') }}';">
                     </button>
                   @endforeach
                 @else
@@ -105,7 +105,7 @@
             </div>
             <div class="product-big-img sn-gallery-main">
               <button type="button" class="sn-gallery-open" aria-label="Enlarge selected book image" aria-haspopup="dialog" aria-controls="snGalleryModal">
-                <img src="{{ $mainImgUrl }}" alt="{{ $product->product_name }}">
+                <img src="{{ $mainImgUrl }}" alt="{{ $product->product_name }}" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/pg-6.png') }}';">
               </button>
               <p class="sn-gallery-hint">Click image to enlarge</p>
             </div>
@@ -341,7 +341,7 @@
               <div class="product-style1 wow animate__fadeInUp" data-wow-delay="0.30s">
                 <a href="{{ route('front.product.show', $rel->id) }}">
                   <div class="product-img">
-                    <img src="{{ $rel->cover_image && file_exists(public_path($rel->cover_image)) ? asset($rel->cover_image) : asset('assets/img/book/pg-1.png') }}" alt="{{ $rel->product_name }}">
+                    <img src="{{ !empty($rel->cover_image) ? asset($rel->cover_image) : asset('assets/img/book/pg-1.png') }}" alt="{{ $rel->product_name }}" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/pg-1.png') }}';">
                   </div>
                   <div class="product-content">
                     <div class="product-rating">

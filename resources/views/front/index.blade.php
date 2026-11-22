@@ -55,11 +55,7 @@
             </div>
             <div class="col-xxl-4 col-xl-4 col-lg-5 col-md-5 col-sm-5 col-xs-6 mt-lg-3 mt-sm-1 mt-2">
               <div class="hero-img wow animate__flipInY" data-wow-delay="0.50s">
-                @if($slide->book_image && file_exists(public_path($slide->book_image)))
-                  <img src="{{ asset($slide->book_image) }}" alt="{{ $slide->title }}">
-                @else
-                  <img src="{{ asset('assets/img/hero/english-group-img.png') }}" alt="{{ $slide->title }}">
-                @endif
+                <img src="{{ !empty($slide->book_image) ? asset($slide->book_image) : asset('assets/img/hero/english-group-img.png') }}" alt="{{ $slide->title ?? 'Banner' }}" onerror="this.onerror=null;this.src='{{ asset('assets/img/hero/english-group-img.png') }}';">
               </div>
             </div>
           </div>
@@ -110,11 +106,20 @@
           <div class="sn-category-slide">
             <a class="sn-category-card" href="{{ route('front.product.index', ['category' => $cat->id]) }}">
               <span class="sn-category-image">
-                @if($cat->image && file_exists(public_path($cat->image)))
-                  <img src="{{ asset($cat->image) }}" alt="{{ $cat->category_name }}" width="240" height="240" loading="lazy" style="object-fit: contain;">
-                @else
-                  <img src="{{ asset('assets/img/hero/english-group-img.png') }}" alt="{{ $cat->category_name }}" width="240" height="240" loading="lazy" style="object-fit: contain;">
-                @endif
+                @php
+                  $catFallbackList = [
+                    'assets/img/hero/english-group-img.png',
+                    'assets/img/hero/guj-group-img.png',
+                    'assets/img/hero/hero-img-1-1.png',
+                    'assets/img/hero/hero-img-2-1.png',
+                    'assets/img/book/eng-workbook.png',
+                    'assets/img/book/explore-by-series.png',
+                  ];
+                  $catImg = !empty($cat->image) 
+                      ? $cat->image 
+                      : $catFallbackList[$idx % count($catFallbackList)];
+                @endphp
+                <img src="{{ asset($catImg) }}" alt="{{ $cat->category_name }}" width="240" height="240" loading="lazy" style="object-fit: contain;" onerror="this.onerror=null;this.src='{{ asset('assets/img/hero/english-group-img.png') }}';">
               </span>
               <h3>{{ $cat->category_name }}</h3>
               <span class="sn-category-caption">
@@ -204,44 +209,141 @@
       <div class="row g-4">
         @php
           $subjectIcons = [
-            'Phonics' => 'assets/img/book/rhymes-sr-kg.png',
-            'Rhymes' => 'assets/img/book/rhymes-sr-kg.png',
-            'General Knowledge' => 'assets/img/book/gk-two.png',
-            'G.K.' => 'assets/img/book/gk-two.png',
-            'Environmental' => 'assets/img/book/evs-second.png',
-            'Computer' => 'assets/img/book/computer-two.png',
-            'Value Education' => 'assets/img/book/value-edu-four.png',
-            'Mathematics' => 'assets/img/book/maths-four.png',
-            'Maths' => 'assets/img/book/maths-four.png',
-            'English' => 'assets/img/book/eng-four.png',
-            'Hindi' => 'assets/img/book/hindi-five.png',
-            'Gujarati' => 'assets/img/book/guj-four.png',
-            'Sanskrit' => 'assets/img/book/sanskrit-six.png',
-            'Science' => 'assets/img/book/science-seven.png',
-            'Drawing' => 'assets/img/book/art-craft.png',
-            'Art' => 'assets/img/book/art-craft.png',
+            // Pre-Primary standards
+            'playgroup'           => 'assets/img/book/pg/pg-1.png',
+            'pg'                  => 'assets/img/book/pg/pg-1.png',
+            'nursery'             => 'assets/img/book/pg/pg-2.png',
+            'junior kg'           => 'assets/img/book/jr-kg-eng.png',
+            'jr kg'               => 'assets/img/book/jr-kg-eng.png',
+            'jr. kg'              => 'assets/img/book/jr-kg-eng.png',
+            'lkg'                 => 'assets/img/book/jr-kg-eng.png',
+            'senior kg'           => 'assets/img/book/rhymes-sr-kg.png',
+            'sr kg'               => 'assets/img/book/rhymes-sr-kg.png',
+            'sr. kg'              => 'assets/img/book/rhymes-sr-kg.png',
+            'ukg'                 => 'assets/img/book/rhymes-sr-kg.png',
+            'phonics'             => 'assets/img/book/rhymes-sr-kg.png',
+            'rhymes'              => 'assets/img/book/rhymes-sr-kg.png',
+
+            // Standards / Classes
+            'standard 1 (premium' => 'assets/img/book/eng-grammer/grammer-1.png',
+            'standard 1 (standard'=> 'assets/img/book/eng-grammer/eng-grammer-1.jpg',
+            'standard 1'          => 'assets/img/book/eng-grammer/grammer-1.png',
+            'std 1'               => 'assets/img/book/eng-grammer/grammer-1.png',
+            'std. 1'              => 'assets/img/book/eng-grammer/grammer-1.png',
+            'class 1'             => 'assets/img/book/eng-grammer/grammer-1.png',
+
+            'standard 2'          => 'assets/img/book/eng-grammer/grammer-2.png',
+            'std 2'               => 'assets/img/book/eng-grammer/grammer-2.png',
+            'std. 2'              => 'assets/img/book/eng-grammer/grammer-2.png',
+            'class 2'             => 'assets/img/book/eng-grammer/grammer-2.png',
+
+            'standard 3'          => 'assets/img/book/eng-grammer/grammer-3.png',
+            'std 3'               => 'assets/img/book/eng-grammer/grammer-3.png',
+            'std. 3'              => 'assets/img/book/eng-grammer/grammer-3.png',
+            'class 3'             => 'assets/img/book/eng-grammer/grammer-3.png',
+
+            'standard 4'          => 'assets/img/book/eng-grammer/grammer-4.png',
+            'std 4'               => 'assets/img/book/eng-grammer/grammer-4.png',
+            'std. 4'              => 'assets/img/book/eng-grammer/grammer-4.png',
+            'class 4'             => 'assets/img/book/eng-grammer/grammer-4.png',
+
+            'standard 5'          => 'assets/img/book/eng-grammer/grammer-5.png',
+            'std 5'               => 'assets/img/book/eng-grammer/grammer-5.png',
+            'std. 5'              => 'assets/img/book/eng-grammer/grammer-5.png',
+            'class 5'             => 'assets/img/book/eng-grammer/grammer-5.png',
+
+            'standard 6'          => 'assets/img/book/eng-grammer/grammer-6.png',
+            'std 6'               => 'assets/img/book/eng-grammer/grammer-6.png',
+            'std. 6'              => 'assets/img/book/eng-grammer/grammer-6.png',
+            'class 6'             => 'assets/img/book/eng-grammer/grammer-6.png',
+
+            'standard 7'          => 'assets/img/book/eng-grammer/grammer-7.png',
+            'std 7'               => 'assets/img/book/eng-grammer/grammer-7.png',
+            'std. 7'              => 'assets/img/book/eng-grammer/grammer-7.png',
+            'class 7'             => 'assets/img/book/eng-grammer/grammer-7.png',
+
+            'standard 8'          => 'assets/img/book/eng-grammer/grammer-8.png',
+            'std 8'               => 'assets/img/book/eng-grammer/grammer-8.png',
+            'std. 8'              => 'assets/img/book/eng-grammer/grammer-8.png',
+            'class 8'             => 'assets/img/book/eng-grammer/grammer-8.png',
+
+            // Subjects
+            'workbook'            => 'assets/img/book/eng-workbook.png',
+            'grammar'             => 'assets/img/book/eng-grammer/grammer-1.png',
+            'mathematics'         => 'assets/img/book/maths-four.png',
+            'maths'               => 'assets/img/book/maths-four.png',
+            'science'             => 'assets/img/book/science-seven.png',
+            'computer'            => 'assets/img/book/computer-four.png',
+            'general knowledge'   => 'assets/img/book/gk-two.png',
+            'g.k.'                => 'assets/img/book/gk-two.png',
+            'environmental'       => 'assets/img/book/evs-second.png',
+            'evs'                 => 'assets/img/book/evs-second.png',
+            'value education'     => 'assets/img/book/value-edu-four.png',
+            'english'             => 'assets/img/book/eng-four.png',
+            'hindi'               => 'assets/img/book/hindi-five.png',
+            'gujarati'            => 'assets/img/book/guj-four.png',
+            'sanskrit'            => 'assets/img/book/sanskrit-six.png',
+            'drawing'             => 'assets/img/book/guj/art-craft.png',
+            'art'                 => 'assets/img/book/guj/art-craft.png',
+          ];
+
+          $engFallbacks = [
+            'assets/img/book/pg/pg-1.png',
+            'assets/img/book/pg/pg-2.png',
+            'assets/img/book/jr-kg-eng.png',
+            'assets/img/book/rhymes-sr-kg.png',
+            'assets/img/book/eng-grammer/grammer-1.png',
+            'assets/img/book/eng-grammer/grammer-2.png',
+            'assets/img/book/eng-grammer/grammer-3.png',
+            'assets/img/book/eng-grammer/grammer-4.png',
+            'assets/img/book/eng-grammer/grammer-5.png',
+            'assets/img/book/eng-grammer/grammer-6.png',
+            'assets/img/book/eng-grammer/grammer-7.png',
+            'assets/img/book/eng-grammer/grammer-8.png',
           ];
         @endphp
 
         @forelse($englishSubjects ?? [] as $eIndex => $eSub)
           @php
-            $thumb = 'assets/img/book/eng-four.png';
-            if (!empty($eSub->image) && file_exists(public_path($eSub->image))) {
+            $thumb = null;
+
+            // 1. FIRST PRIORITY: Product's cover_image
+            // When an admin adds a product under this subcategory/class, use that product's cover_image
+            if (!empty($eSub->products) && $eSub->products->count() > 0) {
+              $coverProd = $eSub->products->first(function($p) {
+                return !empty($p->cover_image);
+              });
+              if ($coverProd && !empty($coverProd->cover_image)) {
+                $thumb = $coverProd->cover_image;
+              }
+            }
+
+            // 2. Check Subcategory image
+            if (!$thumb && !empty($eSub->image)) {
               $thumb = $eSub->image;
-            } else {
+            }
+
+            // 3. Fallback: Keyword matching on subcategory name
+            if (!$thumb) {
+              $subLower = mb_strtolower($eSub->subcategory_name);
               foreach($subjectIcons as $key => $iconPath) {
-                if (stripos($eSub->subcategory_name, $key) !== false) {
+                if (mb_stripos($subLower, $key) !== false) {
                   $thumb = $iconPath;
                   break;
                 }
               }
+            }
+
+            // 4. Distinct rotating fallback
+            if (!$thumb) {
+              $thumb = $engFallbacks[$eIndex % count($engFallbacks)];
             }
           @endphp
           <div class="col-xl-2 col-md-4 col-sm-6 col-12">
             <div class="categorie-style2 wow animate__fadeInUp" data-wow-delay="{{ 0.10 + ($eIndex * 0.05) }}s">
               <div class="categorie-img mb-3">
                 <a href="{{ route('front.product.index', ['subcategory' => $eSub->id]) }}">
-                  <img src="{{ asset($thumb) }}" alt="{{ $eSub->subcategory_name }}">
+                  <img src="{{ asset($thumb) }}" alt="{{ $eSub->subcategory_name }}" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/eng-workbook.png') }}';">
                 </a>
               </div>
               <h2 class="product-title">
@@ -283,7 +385,7 @@
             </div>
             @if(isset($featuredBook) && $featuredBook)
               <a href="{{ route('front.product.show', $featuredBook->id) }}">
-                <img src="{{ $featuredBook->cover_image && file_exists(public_path($featuredBook->cover_image)) ? asset($featuredBook->cover_image) : asset('assets/img/selling/selling-img.png') }}" class="w-100" alt="{{ $featuredBook->product_name }}" style="max-height: 480px; object-fit: contain;">
+                <img src="{{ !empty($featuredBook->cover_image) ? asset($featuredBook->cover_image) : asset('assets/img/selling/selling-img.png') }}" class="w-100" alt="{{ $featuredBook->product_name ?? 'Featured Book' }}" style="max-height: 480px; object-fit: contain;" onerror="this.onerror=null;this.src='{{ asset('assets/img/selling/selling-img.png') }}';">
               </a>
             @else
               <img src="{{ asset('assets/img/selling/selling-img.png') }}" class="w-100" alt="selling images">
@@ -296,7 +398,7 @@
               @foreach($sideBooks as $sIdx => $sBook)
                 <div class="book-item wow animate__fadeInUp" data-wow-delay="{{ 0.30 + ($sIdx * 0.10) }}s">
                   <a href="{{ route('front.product.show', $sBook->id) }}" title="{{ $sBook->product_name }}">
-                    <img src="{{ $sBook->cover_image && file_exists(public_path($sBook->cover_image)) ? asset($sBook->cover_image) : asset('assets/img/selling/book-img-' . ($sIdx + 1) . '.png') }}" alt="{{ $sBook->product_name }}" style="height: 110px; width: 80px; object-fit: contain; background: #fff; padding: 4px; border-radius: 4px;">
+                    <img src="{{ !empty($sBook->cover_image) ? asset($sBook->cover_image) : asset('assets/img/selling/book-img-' . ($sIdx + 1) . '.png') }}" alt="{{ $sBook->product_name ?? 'Book' }}" style="height: 110px; width: 80px; object-fit: contain; background: #fff; padding: 4px; border-radius: 4px;" onerror="this.onerror=null;this.src='{{ asset('assets/img/selling/book-img-1.png') }}';">
                   </a>
                 </div>
               @endforeach
@@ -324,38 +426,158 @@
       <div class="row g-4">
         @php
           $gujSubjectIcons = [
-            'Computer' => 'assets/img/book/guj/computer-four.png',
-            'English' => 'assets/img/book/guj/english-grammer-five.png',
-            'Gujarati' => 'assets/img/book/guj-four.png',
-            'General Knowledge' => 'assets/img/book/guj/gk-six.png',
-            'Art' => 'assets/img/book/guj/art-craft-eight.png',
-            'Rhymes' => 'assets/img/book/guj/rhymes.png',
-            'Hindi' => 'assets/img/book/guj/hindi-two.png',
-            'Maths' => 'assets/img/book/guj/maths-two.png',
-            'ધોરણ' => 'assets/img/book/guj/kalshor.png',
-            'Playgroup' => 'assets/img/book/guj/rhymes.png',
+            // Pre-Primary
+            'playgroup'           => 'assets/img/book/guj/rhymes.png',
+            'pg'                  => 'assets/img/book/guj/rhymes.png',
+            'બાળગીત'              => 'assets/img/book/guj/rhymes.png',
+            'જોડકણાં'             => 'assets/img/book/guj/rhymes.png',
+            'nursery'             => 'assets/img/book/guj/art-craft-book.png',
+            'નર્સરી'              => 'assets/img/book/guj/art-craft-book.png',
+            'junior kg'           => 'assets/img/book/guj/hindi-two.png',
+            'jr kg'               => 'assets/img/book/guj/hindi-two.png',
+            'jr. kg'              => 'assets/img/book/guj/hindi-two.png',
+            'lkg'                 => 'assets/img/book/guj/hindi-two.png',
+            'જુનિયર'              => 'assets/img/book/guj/hindi-two.png',
+            'senior kg'           => 'assets/img/book/guj/maths-two.png',
+            'sr kg'               => 'assets/img/book/guj/maths-two.png',
+            'sr. kg'              => 'assets/img/book/guj/maths-two.png',
+            'ukg'                 => 'assets/img/book/guj/maths-two.png',
+            'સિનિયર'              => 'assets/img/book/guj/maths-two.png',
+
+            // Standards / Classes (both Gujarati digits & English numerals)
+            'ધોરણ ૧'              => 'assets/img/book/guj/english-one.png',
+            'ધોરણ 1'              => 'assets/img/book/guj/english-one.png',
+            'standard 1'          => 'assets/img/book/guj/english-one.png',
+            'std 1'               => 'assets/img/book/guj/english-one.png',
+            'std. 1'              => 'assets/img/book/guj/english-one.png',
+            'class 1'             => 'assets/img/book/guj/english-one.png',
+
+            'ધોરણ ૨'              => 'assets/img/book/guj/kuhu.png',
+            'ધોરણ 2'              => 'assets/img/book/guj/kuhu.png',
+            'standard 2'          => 'assets/img/book/guj/kuhu.png',
+            'std 2'               => 'assets/img/book/guj/kuhu.png',
+            'std. 2'              => 'assets/img/book/guj/kuhu.png',
+            'class 2'             => 'assets/img/book/guj/kuhu.png',
+
+            'ધોરણ ૩'              => 'assets/img/book/guj/kalshor.png',
+            'ધોરણ 3'              => 'assets/img/book/guj/kalshor.png',
+            'standard 3'          => 'assets/img/book/guj/kalshor.png',
+            'std 3'               => 'assets/img/book/guj/kalshor.png',
+            'std. 3'              => 'assets/img/book/guj/kalshor.png',
+            'class 3'             => 'assets/img/book/guj/kalshor.png',
+
+            'ધોરણ ૪'              => 'assets/img/book/guj-four.png',
+            'ધોરણ 4'              => 'assets/img/book/guj-four.png',
+            'standard 4'          => 'assets/img/book/guj-four.png',
+            'std 4'               => 'assets/img/book/guj-four.png',
+            'std. 4'              => 'assets/img/book/guj-four.png',
+            'class 4'             => 'assets/img/book/guj-four.png',
+
+            'ધોરણ ૫'              => 'assets/img/book/guj/english-grammer-five.png',
+            'ધોરણ 5'              => 'assets/img/book/guj/english-grammer-five.png',
+            'standard 5'          => 'assets/img/book/guj/english-grammer-five.png',
+            'std 5'               => 'assets/img/book/guj/english-grammer-five.png',
+            'std. 5'              => 'assets/img/book/guj/english-grammer-five.png',
+            'class 5'             => 'assets/img/book/guj/english-grammer-five.png',
+
+            'ધોરણ ૬'              => 'assets/img/book/guj/gk-six.png',
+            'ધોરણ 6'              => 'assets/img/book/guj/gk-six.png',
+            'standard 6'          => 'assets/img/book/guj/gk-six.png',
+            'std 6'               => 'assets/img/book/guj/gk-six.png',
+            'std. 6'              => 'assets/img/book/guj/gk-six.png',
+            'class 6'             => 'assets/img/book/guj/gk-six.png',
+
+            'ધોરણ ૭'              => 'assets/img/book/guj/kekarav.png',
+            'ધોરણ 7'              => 'assets/img/book/guj/kekarav.png',
+            'standard 7'          => 'assets/img/book/guj/kekarav.png',
+            'std 7'               => 'assets/img/book/guj/kekarav.png',
+            'std. 7'              => 'assets/img/book/guj/kekarav.png',
+            'class 7'             => 'assets/img/book/guj/kekarav.png',
+
+            'ધોરણ ૮'              => 'assets/img/book/guj/computer-book.png',
+            'ધોરણ 8'              => 'assets/img/book/guj/computer-book.png',
+            'standard 8'          => 'assets/img/book/guj/computer-book.png',
+            'std 8'               => 'assets/img/book/guj/computer-book.png',
+            'std. 8'              => 'assets/img/book/guj/computer-book.png',
+            'class 8'             => 'assets/img/book/guj/computer-book.png',
+
+            // Subjects
+            'computer'            => 'assets/img/book/guj/computer-four.png',
+            'english'             => 'assets/img/book/guj/english-grammer-five.png',
+            'અંગ્રેજી'            => 'assets/img/book/guj/english-grammer-five.png',
+            'gujarati'            => 'assets/img/book/guj/guj-book.png',
+            'ગુજરાતી'             => 'assets/img/book/guj/guj-book.png',
+            'general knowledge'   => 'assets/img/book/guj/gk-book.png',
+            'gk'                  => 'assets/img/book/guj/gk-six.png',
+            'g.k.'                => 'assets/img/book/guj/gk-six.png',
+            'સામાન્ય જ્ઞાન'       => 'assets/img/book/guj/gk-book.png',
+            'art'                 => 'assets/img/book/guj/art-craft-eight.png',
+            'ચિત્ર'               => 'assets/img/book/guj/art-craft-eight.png',
+            'drawing'             => 'assets/img/book/guj/art-craft-eight.png',
+            'rhymes'              => 'assets/img/book/guj/rhymes.png',
+            'hindi'               => 'assets/img/book/guj/hindi-book.png',
+            'હિન્દી'              => 'assets/img/book/guj/hindi-two.png',
+            'maths'               => 'assets/img/book/guj/maths-two.png',
+            'ગણિત'                => 'assets/img/book/guj/maths-two.png',
+          ];
+
+          $gujFallbacks = [
+            'assets/img/book/guj/rhymes.png',
+            'assets/img/book/guj/art-craft-book.png',
+            'assets/img/book/guj/hindi-two.png',
+            'assets/img/book/guj/maths-two.png',
+            'assets/img/book/guj/english-one.png',
+            'assets/img/book/guj/kuhu.png',
+            'assets/img/book/guj/kalshor.png',
+            'assets/img/book/guj-four.png',
+            'assets/img/book/guj/english-grammer-five.png',
+            'assets/img/book/guj/gk-six.png',
+            'assets/img/book/guj/kekarav.png',
+            'assets/img/book/guj/computer-book.png',
           ];
         @endphp
 
         @forelse($gujaratiSubjects ?? [] as $gIndex => $gSub)
           @php
-            $gThumb = 'assets/img/book/guj-four.png';
-            if (!empty($gSub->image) && file_exists(public_path($gSub->image))) {
+            $gThumb = null;
+
+            // 1. FIRST PRIORITY: Product's cover_image
+            // When an admin adds a product under this subcategory/class, use that product's cover_image
+            if (!empty($gSub->products) && $gSub->products->count() > 0) {
+              $gCoverProd = $gSub->products->first(function($p) {
+                return !empty($p->cover_image);
+              });
+              if ($gCoverProd && !empty($gCoverProd->cover_image)) {
+                $gThumb = $gCoverProd->cover_image;
+              }
+            }
+
+            // 2. Check Subcategory image
+            if (!$gThumb && !empty($gSub->image)) {
               $gThumb = $gSub->image;
-            } else {
+            }
+
+            // 3. Fallback: Keyword matching on subcategory name
+            if (!$gThumb) {
+              $gSubLower = mb_strtolower($gSub->subcategory_name);
               foreach($gujSubjectIcons as $gKey => $gIconPath) {
-                if (stripos($gSub->subcategory_name, $gKey) !== false) {
+                if (mb_stripos($gSubLower, $gKey) !== false) {
                   $gThumb = $gIconPath;
                   break;
                 }
               }
+            }
+
+            // 4. Distinct rotating fallback
+            if (!$gThumb) {
+              $gThumb = $gujFallbacks[$gIndex % count($gujFallbacks)];
             }
           @endphp
           <div class="col-xl-2 col-md-4 col-sm-6 col-12">
             <div class="categorie-style2 cat_color wow animate__fadeInUp" data-wow-delay="{{ 0.10 + ($gIndex * 0.05) }}s">
               <div class="categorie-img mb-3">
                 <a href="{{ route('front.product.index', ['subcategory' => $gSub->id]) }}">
-                  <img src="{{ asset($gThumb) }}" alt="{{ $gSub->subcategory_name }}">
+                  <img src="{{ asset($gThumb) }}" alt="{{ $gSub->subcategory_name }}" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/guj-four.png') }}';">
                 </a>
               </div>
               <h2 class="product-title">
@@ -384,12 +606,25 @@
           <div class="col-xl-3 col-md-4 col-sm-6">
             <div class="product-style1 wow animate__fadeInUp" data-wow-delay="{{ 0.20 + ($bIndex * 0.10) }}s">
               <div class="product-img">
+                @php
+                  $seriesFallbacks = [
+                    'assets/img/book/pg/pg-1.png',
+                    'assets/img/book/pg/pg-2.png',
+                    'assets/img/book/jr-kg-eng.png',
+                    'assets/img/book/rhymes-sr-kg.png',
+                    'assets/img/book/eng-workbook.png',
+                    'assets/img/book/guj-four.png',
+                    'assets/img/book/maths-four.png',
+                    'assets/img/book/computer-four.png',
+                    'assets/img/book/evs-second.png',
+                    'assets/img/book/science-seven.png',
+                  ];
+                  $sBookImg = !empty($bBook->cover_image)
+                      ? $bBook->cover_image
+                      : $seriesFallbacks[$bIndex % count($seriesFallbacks)];
+                @endphp
                 <a href="{{ route('front.product.show', $bBook->id) }}">
-                  @if($bBook->cover_image && file_exists(public_path($bBook->cover_image)))
-                    <img src="{{ asset($bBook->cover_image) }}" alt="{{ $bBook->product_name }}">
-                  @else
-                    <img src="{{ asset('assets/img/book/pg-6.png') }}" alt="{{ $bBook->product_name }}">
-                  @endif
+                  <img src="{{ asset($sBookImg) }}" alt="{{ $bBook->product_name }}" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/pg-6.png') }}';">
                 </a>
                 {{-- Wishlist & Cart commented out as requested --}}
                 {{--

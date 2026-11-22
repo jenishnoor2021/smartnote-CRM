@@ -210,17 +210,22 @@
                      <!-- Cover Image -->
                      <div class="col-md-6">
                         <div class="form-group" style="margin-bottom: 15px;">
-                           <label class="text-semibold">{{ __('Main Cover Image') }}:</label>
+                           <label class="text-semibold">
+                              {{ __('Main Cover Image') }}:
+                              @if(empty($product->cover_image))
+                                 <span class="text-danger">*</span>
+                              @endif
+                           </label>
                            
                            <div style="border: 2px dashed #b2dfdb; border-radius: 6px; padding: 20px; background: #fafdfd; text-align: center; min-height: 230px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
                               
                               <input type="file" id="cover_image" name="cover_image" accept="image/*" onchange="handleCoverSelect(this);" style="display: none;">
 
                               <!-- If already has cover image -->
-                              @if($product->cover_image && file_exists(public_path($product->cover_image)))
+                              @if(!empty($product->cover_image))
                                  <div id="current_cover_box" style="text-align: center;">
                                     <div style="position: relative; display: inline-block; width: 120px; height: 160px; border-radius: 6px; border: 1px solid #ddd; background: #fff; padding: 3px; box-shadow: 0 2px 6px rgba(0,0,0,0.12);">
-                                       <img src="{{ asset($product->cover_image) }}" alt="Current Cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                                       <img src="{{ asset($product->cover_image) }}" alt="Current Cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/pg-6.png') }}';">
                                        <span class="label label-success" style="position: absolute; bottom: 5px; left: 5px; right: 5px; font-size: 9px; padding: 2px 0;">Current Cover</span>
                                     </div>
                                     <div style="margin-top: 8px;">
@@ -247,6 +252,8 @@
                               </div>
 
                            </div>
+
+                           <div id="cover_image_error_box"></div>
 
                            @error('cover_image')
                            <div class="text-danger mt-1 mb-1">{{ $message }}</div>
@@ -385,6 +392,7 @@
     * ======================================================== */
    function handleCoverSelect(input) {
       if (input.files && input.files[0]) {
+         $('#cover_image_error_box').empty();
          var reader = new FileReader();
          reader.onload = function(e) {
             $('#new_cover_preview_img').attr('src', e.target.result);
@@ -403,6 +411,9 @@
       $('#new_cover_preview_wrapper').hide();
       $('#current_cover_box').fadeIn(200);
       $('#cover_upload_placeholder').fadeIn(200);
+      @if(empty($product->cover_image))
+         $('#cover_image_error_box').html('<label class="validation-error-label text-danger" style="display: block; margin-top: 6px;"><i class="icon-cancel-circle2 position-left"></i>{{ __("Cover image is required.") }}</label>');
+      @endif
    }
 
    /* ========================================================
@@ -574,6 +585,18 @@
             mrp_price: { number: true, min: 0 }
          },
          submitHandler: function(form) {
+            var hasExistingCover = {{ !empty($product->cover_image) ? 'true' : 'false' }};
+            var coverInput = document.getElementById('cover_image');
+            if (!hasExistingCover && (!coverInput.files || coverInput.files.length === 0)) {
+               $('#cover_image_error_box').html('<label class="validation-error-label text-danger" style="display: block; margin-top: 6px;"><i class="icon-cancel-circle2 position-left"></i>{{ __("Cover image is required because this product currently has no cover image.") }}</label>');
+               var scrollTarget = $("#cover_upload_placeholder").length && $("#cover_upload_placeholder").is(":visible") 
+                  ? $("#cover_upload_placeholder").offset().top 
+                  : ($("#cover_image_error_box").length ? $("#cover_image_error_box").offset().top : $("#cover_image").offset().top);
+               $('html, body').animate({
+                  scrollTop: scrollTarget - 120
+               }, 300);
+               return false;
+            }
             form.submit();
          }
       });

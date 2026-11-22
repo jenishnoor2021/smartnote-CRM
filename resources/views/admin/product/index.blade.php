@@ -68,8 +68,8 @@
                         </td>
                         <td>{{ $product->id }}</td>
                         <td class="text-center">
-                            @if($product->cover_image && file_exists(public_path($product->cover_image)))
-                                <img src="{{ asset($product->cover_image) }}" alt="{{ $product->product_name }}" style="width: 50px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
+                            @if(!empty($product->cover_image))
+                                <img src="{{ asset($product->cover_image) }}" alt="{{ $product->product_name }}" style="width: 50px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/pg-6.png') }}';">
                             @else
                                 <span class="label label-default" style="display: inline-block; padding: 6px 10px;">No Cover</span>
                             @endif

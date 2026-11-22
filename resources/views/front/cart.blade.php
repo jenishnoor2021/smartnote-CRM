@@ -171,11 +171,7 @@
                     <tr class="cart_item" id="cart_row_{{ $id }}" style="border-bottom: 1px solid #f1f5f9;">
                       <td class="cart-col-image py-3">
                         <a href="{{ route('front.product.show', $id) }}" class="cart-productimage">
-                          @if(!empty($item['cover_image']) && file_exists(public_path($item['cover_image'])))
-                            <img src="{{ asset($item['cover_image']) }}" alt="{{ $item['product_name'] }}" width="75" height="95" style="border-radius: 6px; object-fit: contain;">
-                          @else
-                            <img src="{{ asset('assets/img/book/maths-four.png') }}" alt="{{ $item['product_name'] }}" width="75" height="95" style="border-radius: 6px; object-fit: contain;">
-                          @endif
+                          <img src="{{ !empty($item['cover_image']) ? asset($item['cover_image']) : asset('assets/img/book/maths-four.png') }}" alt="{{ $item['product_name'] ?? 'Product' }}" width="75" height="95" style="border-radius: 6px; object-fit: contain;" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/maths-four.png') }}';">
                         </a>
                       </td>
                       <td class="cart-col-productname py-3">

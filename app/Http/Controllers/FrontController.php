@@ -41,7 +41,10 @@ class FrontController extends Controller
             ->get();
 
         // English Medium Subjects / Subcategories (Dynamic by Category Name)
-        $englishSubjects = SubCategory::whereHas('category', function ($query) {
+        $englishSubjects = SubCategory::with(['products' => function ($q) {
+                $q->where('is_active', 1);
+            }])
+            ->whereHas('category', function ($query) {
                 $query->where(function ($q) {
                     $q->where('category_name', 'like', '%English%')
                       ->orWhere('category_name', 'like', '%Workbook%');
@@ -54,7 +57,10 @@ class FrontController extends Controller
             ->get();
 
         if ($englishSubjects->isEmpty()) {
-            $englishSubjects = SubCategory::whereHas('products', function ($query) {
+            $englishSubjects = SubCategory::with(['products' => function ($q) {
+                    $q->where('is_active', 1);
+                }])
+                ->whereHas('products', function ($query) {
                     $query->where('medium', 'like', '%English%')->where('is_active', 1);
                 })
                 ->where('is_active', 1)
@@ -65,7 +71,10 @@ class FrontController extends Controller
         }
 
         // Gujarati Medium Subjects / Subcategories (Dynamic by Category Name)
-        $gujaratiSubjects = SubCategory::whereHas('category', function ($query) {
+        $gujaratiSubjects = SubCategory::with(['products' => function ($q) {
+                $q->where('is_active', 1);
+            }])
+            ->whereHas('category', function ($query) {
                 $query->where('category_name', 'like', '%Gujarati%')
                       ->where('is_active', 1);
             })
@@ -76,7 +85,10 @@ class FrontController extends Controller
             ->get();
 
         if ($gujaratiSubjects->isEmpty()) {
-            $gujaratiSubjects = SubCategory::whereHas('products', function ($query) {
+            $gujaratiSubjects = SubCategory::with(['products' => function ($q) {
+                    $q->where('is_active', 1);
+                }])
+                ->whereHas('products', function ($query) {
                     $query->where('medium', 'like', '%Gujarati%')->where('is_active', 1);
                 })
                 ->where('is_active', 1)

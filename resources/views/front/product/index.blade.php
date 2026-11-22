@@ -438,8 +438,8 @@
                 <div class="product-style1 wow animate__fadeInUp" data-wow-delay="{{ 0.15 + (($pIndex % 4) * 0.08) }}s">
                   <div class="product-img">
                     <a href="{{ route('front.product.show', $p->id) }}">
-                      @if($p->cover_image && file_exists(public_path($p->cover_image)))
-                        <img src="{{ asset($p->cover_image) }}" alt="{{ $p->product_name }}" style="max-height: 220px; object-fit: contain;">
+                      @if(!empty($p->cover_image))
+                        <img src="{{ asset($p->cover_image) }}" alt="{{ $p->product_name }}" style="max-height: 220px; object-fit: contain;" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/pg-6.png') }}';">
                       @else
                         <img src="{{ asset('assets/img/book/pg-6.png') }}" alt="{{ $p->product_name }}" style="max-height: 220px; object-fit: contain;">
                       @endif

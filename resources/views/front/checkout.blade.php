@@ -321,11 +321,7 @@
               <div class="sn-summary-items mb-3" style="max-height: 380px; overflow-y: auto;">
                 @foreach($cart as $id => $item)
                   <div class="sn-summary-item">
-                    @if(!empty($item['cover_image']) && file_exists(public_path($item['cover_image'])))
-                      <img src="{{ asset($item['cover_image']) }}" alt="{{ $item['product_name'] }}" class="sn-summary-thumb">
-                    @else
-                      <img src="{{ asset('assets/img/book/maths-four.png') }}" alt="{{ $item['product_name'] }}" class="sn-summary-thumb">
-                    @endif
+                    <img src="{{ !empty($item['cover_image']) ? asset($item['cover_image']) : asset('assets/img/book/maths-four.png') }}" alt="{{ $item['product_name'] ?? 'Product' }}" class="sn-summary-thumb" onerror="this.onerror=null;this.src='{{ asset('assets/img/book/maths-four.png') }}';">
                     <div class="sn-summary-info">
                       <div class="sn-summary-title">{{ $item['product_name'] }}</div>
                       <div class="sn-summary-qty">
