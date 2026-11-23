@@ -33,7 +33,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/animate.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/nouislider.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/sn-header.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/sn-header.css?v=' . time()) }}">
     <link rel="stylesheet" href="{{ asset('assets/css/sn-floating-order.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/sn-floating-whatsapp.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/sn-product-gallery.css') }}">
@@ -133,8 +133,8 @@
     <script src="{{ asset('assets/js/wow.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.nice-select.min.js') }}"></script>
     <script src="{{ asset('assets/js/nouislider.min.js') }}"></script>
-    <script src="{{ asset('assets/js/main.js') }}"></script>
-    <script src="{{ asset('assets/js/sn-header-cart.js?v=2') }}"></script>
+    <script src="{{ asset('assets/js/main.js?v=' . time()) }}"></script>
+    <script src="{{ asset('assets/js/sn-header-cart.js?v=' . time()) }}"></script>
     <script src="{{ asset('assets/js/sn-product-gallery.js') }}"></script>
     <script src="{{ asset('assets/js/sn-product-inquiry.js?v=5') }}"></script>
     <script src="{{ asset('assets/js/sn-mobile-filters.js') }}"></script>

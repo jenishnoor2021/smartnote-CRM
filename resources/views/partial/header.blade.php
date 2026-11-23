@@ -91,7 +91,7 @@
     <!--==============================
     Popup Search Box
     ============================== -->
-    <div class="popup-search-box d-block d-xl-none ">
+    <div class="popup-search-box d-block d-lg-none">
         <button class="searchClose"><i class="fal fa-times"></i></button>
         <form action="{{ route('front.product.index') }}" method="GET">
             <input type="text" name="search" class="border-theme" placeholder="What are you looking for" value="{{ request('search') }}">
@@ -139,7 +139,7 @@
         </div>
         <div class="header-middle">
             <div class="container">
-                <div class="row justify-content-between justify-content-start align-items-center gx-sm-0">
+                <div class="row justify-content-between align-items-center gx-sm-0">
                     <div class="col-auto">
                         <div class="header-logo">
                             <a href="{{ url('/') }}" class="d-none d-lg-block">
@@ -160,42 +160,60 @@
                     </div>
                     <div class="col-auto">
                         <div class="header-inner">
-                            <form class="header-search d-none d-xl-block" action="{{ route('front.product.index') }}" method="GET">
-                                <button class="searchBoxTggler" aria-label="search-button" type="submit">
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                </button>
-                                <div class="d-flex align-items-center">
-                                    <div class="dropdown">
-                                        <div class="dropdown-toggle" id="dropdownMenuButton1" data-bs-toggle="dropdown" role="button"
-                                            aria-expanded="false">
-                                            Categories
+                            @php
+                                $selectedCategoryName = 'Categories';
+                                if(request('category') && isset($headerCategories)) {
+                                    $matchedCat = $headerCategories->firstWhere('id', request('category'));
+                                    if($matchedCat) {
+                                        $selectedCategoryName = $matchedCat->category_name;
+                                    }
+                                }
+                            @endphp
+                            <form class="header-search d-none d-lg-flex" action="{{ route('front.product.index') }}" method="GET">
+                                <div class="search-input-wrap d-flex align-items-center flex-grow-1">
+                                    <div class="dropdown search-cat-dropdown">
+                                        <div class="search-cat-toggler" id="snSearchCatDropdown" role="button" tabindex="0" aria-expanded="false" title="Filter by Category">
+                                            <span class="selected-cat-label">{{ $selectedCategoryName }}</span>
                                         </div>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" style="max-height: 350px; overflow-y: auto;">
-                                            <li><a class="dropdown-item" href="{{ route('front.product.index') }}">All Categories</a></li>
+                                        <input type="hidden" name="category" id="snSearchCategoryInput" value="{{ request('category', '') }}">
+                                        <ul class="dropdown-menu search-cat-menu" aria-labelledby="snSearchCatDropdown">
+                                            <li>
+                                                <a class="dropdown-item search-cat-item {{ empty(request('category')) ? 'active' : '' }}" href="{{ route('front.product.index') }}" data-cat-id="">
+                                                    <i class="fa-solid fa-layer-group text-primary me-2"></i> All Categories
+                                                </a>
+                                            </li>
                                             @if(isset($headerCategories) && $headerCategories->count() > 0)
                                                 @foreach($headerCategories as $cat)
-                                                    <li><a class="dropdown-item" href="{{ route('front.product.index', ['category' => $cat->id]) }}">{{ $cat->category_name }}</a></li>
+                                                    <li>
+                                                        <a class="dropdown-item search-cat-item {{ request('category') == $cat->id ? 'active' : '' }}"
+                                                           href="{{ route('front.product.index', ['category' => $cat->id]) }}"
+                                                           data-cat-id="{{ $cat->id }}">
+                                                            @if(!empty($cat->image))
+                                                                <img src="{{ asset($cat->image) }}" alt="icon" style="width: 18px; height: 18px; object-fit: contain; margin-right: 8px;" onerror="this.onerror=null;this.src='{{ asset('assets/img/hero/english-group-img.png') }}';">
+                                                            @else
+                                                                <i class="fa-solid fa-book-open text-primary me-2"></i>
+                                                            @endif
+                                                            {{ $cat->category_name }}
+                                                        </a>
+                                                    </li>
                                                 @endforeach
                                             @endif
                                         </ul>
                                     </div>
-                                    <input type="text" name="search" placeholder="Search your Product’s....." value="{{ request('search') }}">
+                                    <input type="text" name="search" placeholder="Search your Product’s....." value="{{ request('search') }}" autocomplete="off">
                                 </div>
+                                <button class="search-submit-btn" aria-label="search-button" type="submit">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </button>
                             </form>
                             <div class="header-buttons">
-                                <button class="searchBoxTggler vs-icon d-block d-xl-none" aria-label="search-button">
+                                <button type="button" class="searchBoxTggler vs-icon d-block d-lg-none" aria-label="search-button">
                                     <i class="fa-brands fa-searchengin"></i>
                                 </button>
-                                <a href="{{ route('front.cart') }}" class="vs-icon has-badge d-inline-flex d-xl-none" aria-label="View Shopping Cart">
-                                    <i class="fa-solid fa-basket-shopping"></i>
-                                    <span class="badge headerCartCountBadge">{{ $cartCount ?? 0 }}</span>
-                                </a>
-                                {{-- Wishlist commented out as requested --}}
-                                {{-- <a href="{{ url('wishlist') }}" class="vs-icon wishlist"><i class="fal fa-heart"></i></a> --}}
                                 <div class="header-info">
-                                    <div class="header-info_icon">
+                                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $siteSettings['phone_primary'] ?? '+919979865666') }}" class="header-info_icon" title="Call Us">
                                         <i class="fas fa-phone"></i>
-                                    </div>
+                                    </a>
                                     <div class="media-body call-info">
                                         <span class="header-info_label">Call Us 24/7</span>
                                         <div class="header-info_link"><a href="tel:{{ preg_replace('/[^0-9+]/', '', $siteSettings['phone_primary'] ?? '+919979865666') }}">{{ $siteSettings['phone_primary'] ?? '(+91) 99798-65666' }}</a></div>
@@ -212,18 +230,18 @@
                 <div class="container">
                     <div class="menu-top">
                         <div class="row justify-content-between align-items-center gx-sm-0 sn-navigation-row">
-                            <div class="col-xl-auto sn-navigation-main">
+                            <div class="col sn-navigation-main">
                                 <div class="menu-inner">
                                     <div class="header-category">
-                                        <button class="category-toggler"><i class="fa-solid fa-bars-sort"></i>Categories</button>
+                                        <button class="category-toggler" type="button"><i class="fa-solid fa-bars-staggered"></i>Categories</button>
                                         <div class="vs-box-nav">
                                             <ul>
                                                 @if(isset($headerCategories) && $headerCategories->count() > 0)
                                                     @foreach($headerCategories as $cat)
                                                         <li>
                                                             <a href="{{ route('front.product.index', ['category' => $cat->id]) }}">
-                                                                @if($cat->image && file_exists(public_path($cat->image)))
-                                                                    <img src="{{ asset($cat->image) }}" alt="icon" style="width: 20px; height: 20px; object-fit: contain; margin-right: 8px;">
+                                                                @if(!empty($cat->image))
+                                                                    <img src="{{ asset($cat->image) }}" alt="icon" style="width: 20px; height: 20px; object-fit: contain; margin-right: 8px;" onerror="this.onerror=null;this.src='{{ asset('assets/img/hero/english-group-img.png') }}';">
                                                                 @else
                                                                     <i class="fa-solid fa-book-open text-primary" style="margin-right: 8px;"></i>
                                                                 @endif

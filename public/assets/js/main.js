@@ -909,9 +909,7 @@ gsap.to(".bg-paralax", {
 
 
 /*----------- 16. category ----------*/
-$('.category-toggler').on('click', function () {
-    $('.vs-box-nav').toggleClass('active');
-});
+// Category toggler is managed in sn-header-cart.js with outside-click and ESC support
 
 
 
