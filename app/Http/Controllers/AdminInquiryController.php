@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\Inquiry;
 use App\Models\InquiryItem;
@@ -10,6 +11,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\SiteSetting;
+use App\Models\SubCategory;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -97,10 +99,12 @@ class AdminInquiryController extends Controller
      */
     public function create()
     {
+        $categories = Category::where('is_active', 1)->orderBy('sort_order', 'ASC')->orderBy('category_name', 'ASC')->get();
+        $subcategories = SubCategory::where('is_active', 1)->orderBy('sort_order', 'ASC')->orderBy('subcategory_name', 'ASC')->get();
         $products = Product::where('is_active', 1)->orderBy('product_name', 'ASC')->get();
         $sellers = User::where('role', 'seller')->where('is_active', 1)->orderBy('name', 'ASC')->get();
 
-        return view('admin.inquiry.create', compact('products', 'sellers'));
+        return view('admin.inquiry.create', compact('categories', 'subcategories', 'products', 'sellers'));
     }
 
     /**
@@ -255,7 +259,7 @@ class AdminInquiryController extends Controller
     public function edit($id)
     {
         $user = Auth::user();
-        $inquiry = Inquiry::with('items')->findOrFail($id);
+        $inquiry = Inquiry::with(['items.product.category', 'items.product.subcategory'])->findOrFail($id);
 
         if ($user->isSeller() && $inquiry->assigned_to !== $user->id && $inquiry->created_by !== $user->id) {
             abort(403, 'Unauthorized access.');
@@ -266,10 +270,12 @@ class AdminInquiryController extends Controller
                 ->with('error', 'This inquiry has already been converted to an order and cannot be edited.');
         }
 
+        $categories = Category::where('is_active', 1)->orderBy('sort_order', 'ASC')->orderBy('category_name', 'ASC')->get();
+        $subcategories = SubCategory::where('is_active', 1)->orderBy('sort_order', 'ASC')->orderBy('subcategory_name', 'ASC')->get();
         $products = Product::where('is_active', 1)->orderBy('product_name', 'ASC')->get();
         $sellers = User::where('role', 'seller')->where('is_active', 1)->orderBy('name', 'ASC')->get();
 
-        return view('admin.inquiry.edit', compact('inquiry', 'products', 'sellers'));
+        return view('admin.inquiry.edit', compact('inquiry', 'categories', 'subcategories', 'products', 'sellers'));
     }
 
     /**

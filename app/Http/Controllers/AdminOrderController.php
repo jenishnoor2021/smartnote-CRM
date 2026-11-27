@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Coupon;
 use App\Models\Order;
+use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -497,6 +498,45 @@ class AdminOrderController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => false, 'message' => 'Unable to check status: ' . $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Generate / Stream / Download Official Order Invoice PDF
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function generateOrderPdf(Request $request, $id)
+    {
+        $user = Auth::user();
+        $order = Order::with(['items.product', 'seller', 'inquiry', 'coupon'])
+            ->findOrFail($id);
+
+        if ($user->isSeller() && $order->seller_id !== $user->id) {
+            abort(403, 'Unauthorized access to this order invoice.');
+        }
+
+        $settings = SiteSetting::pluck('value', 'key')->toArray();
+
+        $logoPath = public_path($settings['header_logo'] ?? 'assets/img/logo.png');
+        $logoBase64 = '';
+        if (file_exists($logoPath)) {
+            $logoType = pathinfo($logoPath, PATHINFO_EXTENSION);
+            $logoData = file_get_contents($logoPath);
+            $logoBase64 = 'data:image/' . $logoType . ';base64,' . base64_encode($logoData);
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.order.invoice_pdf', compact('order', 'settings', 'logoBase64'));
+        $pdf->setPaper('a4', 'portrait');
+
+        $filename = 'Order-' . ($order->order_no ?: $order->id) . '.pdf';
+
+        if ($request->get('action') === 'view') {
+            return $pdf->stream($filename);
+        }
+
+        return $pdf->download($filename);
     }
 }
 

@@ -165,9 +165,12 @@
         </div>
 
         <div class="btn-group">
-            <button onclick="window.print()" class="btn btn-outline">
+            <a href="{{ route('front.order.pdf', ['order_no' => $order->order_no, 'action' => 'view']) }}" target="_blank" class="btn btn-outline">
                 <i class="fa-solid fa-print"></i> Print Receipt
-            </button>
+            </a>
+            <a href="{{ route('front.order.pdf', ['order_no' => $order->order_no, 'action' => 'download']) }}" class="btn btn-outline" style="border-color: #0284c7; color: #0284c7;">
+                <i class="fa-solid fa-file-pdf"></i> Download Order PDF
+            </a>
             <a href="{{ route('front.home') }}" class="btn btn-primary">
                 <i class="fa-solid fa-arrow-left"></i> Back to Store
             </a>

@@ -8,6 +8,7 @@ use App\Models\InquiryNote;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\SiteSetting;
 use App\Services\BotProtectionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -740,6 +741,41 @@ class FrontProductController extends Controller
         $order = Order::with('items.product')->where('order_no', $order_no)->firstOrFail();
 
         return view('front.payment_success', compact('order'));
+    }
+
+    /**
+     * Generate / Stream / Download Official Order Invoice PDF for customer
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $order_no
+     * @return \Illuminate\Http\Response
+     */
+    public function generateOrderPdf(Request $request, $order_no)
+    {
+        $order = Order::with(['items.product', 'seller', 'inquiry', 'coupon'])
+            ->where('order_no', $order_no)
+            ->firstOrFail();
+
+        $settings = SiteSetting::pluck('value', 'key')->toArray();
+
+        $logoPath = public_path($settings['header_logo'] ?? 'assets/img/logo.png');
+        $logoBase64 = '';
+        if (file_exists($logoPath)) {
+            $logoType = pathinfo($logoPath, PATHINFO_EXTENSION);
+            $logoData = file_get_contents($logoPath);
+            $logoBase64 = 'data:image/' . $logoType . ';base64,' . base64_encode($logoData);
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.order.invoice_pdf', compact('order', 'settings', 'logoBase64'));
+        $pdf->setPaper('a4', 'portrait');
+
+        $filename = 'Order-' . ($order->order_no ?: $order->id) . '.pdf';
+
+        if ($request->get('action') === 'view') {
+            return $pdf->stream($filename);
+        }
+
+        return $pdf->download($filename);
     }
 }
 

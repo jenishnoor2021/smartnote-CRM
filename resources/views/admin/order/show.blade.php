@@ -12,9 +12,12 @@
             </h4>
         </div>
         <div class="heading-elements">
-            <button type="button" class="btn btn-default btn-sm" onclick="window.print();">
+            <a href="{{ route('admin.order.pdf', ['id' => $order->id, 'action' => 'view']) }}" target="_blank" class="btn btn-default btn-sm" title="Print / Preview Official Order Slip">
                 <i class="icon-printer position-left"></i> Print Slip
-            </button>
+            </a>
+            <a href="{{ route('admin.order.pdf', ['id' => $order->id, 'action' => 'download']) }}" class="btn bg-danger btn-sm" title="Download Official Order PDF">
+                <i class="icon-file-pdf position-left"></i> Download Order PDF
+            </a>
             <a href="{{ route('admin.order.index') }}" class="btn btn-default btn-sm">
                 <i class="icon-arrow-left52 position-left"></i> Back to Orders
             </a>

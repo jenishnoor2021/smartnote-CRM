@@ -116,40 +116,103 @@
             <div class="col-md-7">
                 <div class="panel panel-flat">
                     <div class="panel-heading bg-slate-700">
-                        <div class="row">
-                            <div class="col-xs-8">
-                                <h6 class="panel-title"><i class="icon-books position-left"></i> Products in this Inquiry</h6>
+                        <h6 class="panel-title"><i class="icon-books position-left"></i> Products in this Inquiry</h6>
+                    </div>
+                    <div class="panel-body">
+                        <!-- Category & Sub Category Selection Box -->
+                        <div class="well well-sm" style="background-color: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h6 class="text-semibold text-primary" style="margin-top: 0; margin-bottom: 12px;">
+                                        <i class="icon-filter3 position-left"></i> Select Product by Category & Sub Category
+                                    </h6>
+                                </div>
                             </div>
-                            <div class="col-xs-4 text-right">
-                                <button type="button" class="btn btn-xs btn-success" onclick="addProductRow()">
-                                    <i class="icon-plus2 position-left"></i> Add Product
-                                </button>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group mb-10">
+                                        <label class="text-semibold text-size-small"><span class="text-danger">*</span> Category:</label>
+                                        <select id="sel_category" class="form-control" onchange="onCategoryChange()">
+                                            <option value="">-- Select Category --</option>
+                                            @foreach($categories as $cat)
+                                                <option value="{{ $cat->id }}">{{ $cat->category_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group mb-10">
+                                        <label class="text-semibold text-size-small"><span class="text-danger">*</span> Sub Category:</label>
+                                        <select id="sel_subcategory" class="form-control" disabled onchange="onSubcategoryChange()">
+                                            <option value="">-- Select Category First --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group mb-10">
+                                        <label class="text-semibold text-size-small"><span class="text-danger">*</span> Product / Book:</label>
+                                        <select id="sel_product" class="form-control" disabled onchange="onProductSelectChange()">
+                                            <option value="">-- Select Sub Category First --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 6px;">
+                                <div class="col-xs-6 col-sm-4">
+                                    <div class="form-group mb-0">
+                                        <label class="text-semibold text-size-small">Price (₹):</label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">₹</span>
+                                            <input type="number" id="sel_price" class="form-control text-semibold" step="0.01" min="0" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-3">
+                                    <div class="form-group mb-0">
+                                        <label class="text-semibold text-size-small">Quantity:</label>
+                                        <input type="number" id="sel_qty" class="form-control text-semibold" min="1" value="1">
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-5" style="margin-top: 25px;">
+                                    <button type="button" class="btn btn-primary btn-block text-semibold" id="btnAddProduct" onclick="addProductFromSelector()">
+                                        <i class="icon-plus22 position-left"></i> Add Product
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="panel-body table-responsive">
-                        <table class="table table-bordered table-striped" id="productsTable">
-                            <thead>
-                                <tr class="bg-slate-600">
-                                    <th width="45%">Product</th>
-                                    <th width="20%">Price (₹)</th>
-                                    <th width="15%">Qty</th>
-                                    <th width="20%">Subtotal (₹)</th>
-                                    <th width="5%" class="text-center"><i class="icon-trash"></i></th>
-                                </tr>
-                            </thead>
-                            <tbody id="productRowsContainer">
-                                <!-- Dynamic Rows -->
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="3" class="text-right text-semibold">Estimated Total:</th>
-                                    <th colspan="2" class="text-primary text-bold" style="font-size: 16px;">
-                                        ₹<span id="grandTotalDisplay">0.00</span>
-                                    </th>
-                                </tr>
-                            </tfoot>
-                        </table>
+
+                        <!-- Table of Selected Products -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="productsTable">
+                                <thead>
+                                    <tr class="bg-slate-600">
+                                        <th width="42%">Product Details</th>
+                                        <th width="20%">Price (₹)</th>
+                                        <th width="15%">Qty</th>
+                                        <th width="18%">Subtotal (₹)</th>
+                                        <th width="5%" class="text-center"><i class="icon-trash"></i></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productRowsContainer">
+                                    <tr id="emptyRowPlaceholder">
+                                        <td colspan="5" class="text-center text-muted" style="padding: 25px;">
+                                            <i class="icon-cart-add2" style="font-size: 28px; opacity: 0.5;"></i>
+                                            <div style="margin-top: 6px;">No products added yet. Please select Category & Sub Category above and click <strong>"Add Product"</strong>.</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="bg-slate-100">
+                                        <th colspan="3" class="text-right text-semibold">Estimated Total:</th>
+                                        <th colspan="2" class="text-primary text-bold" style="font-size: 16px;">
+                                            ₹<span id="grandTotalDisplay">0.00</span>
+                                        </th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
 
                         @error('products')
                             <div class="text-danger mt-10">{{ $message }}</div>
@@ -168,70 +231,168 @@
     </form>
 </div>
 
-<!-- Product Options Template for JS -->
-<div id="productOptionsTemplate" style="display: none;">
-    <option value="">-- Select Product --</option>
-    @foreach($products as $prod)
-        <option value="{{ $prod->id }}" data-price="{{ $prod->selling_price }}">
-            {{ $prod->product_name }} (₹{{ number_format($prod->selling_price, 2) }})
-        </option>
-    @endforeach
-</div>
-
 @endsection
 
 @section('script')
 <script type="text/javascript">
+    var allSubcategories = @json($subcategories);
+    var allProducts = @json($products);
     var rowCounter = 0;
 
-    function addProductRow(selectedId = '', initialPrice = '', initialQty = 1) {
-        var optionsHtml = $('#productOptionsTemplate').html();
-        var rowId = 'row_' + rowCounter;
+    function onCategoryChange() {
+        var catId = $('#sel_category').val();
+        var $subCatSelect = $('#sel_subcategory');
+        var $prodSelect = $('#sel_product');
 
-        var html = '<tr id="' + rowId + '">' +
+        $subCatSelect.empty().append('<option value="">-- Select Sub Category --</option>');
+        $prodSelect.empty().append('<option value="">-- Select Sub Category First --</option>').prop('disabled', true);
+        $('#sel_price').val('');
+        $('#sel_qty').val(1);
+
+        if(!catId) {
+            $subCatSelect.empty().append('<option value="">-- Select Category First --</option>').prop('disabled', true);
+            return;
+        }
+
+        var filteredSubcats = allSubcategories.filter(function(sub) {
+            return sub.category_id == catId;
+        });
+
+        if(filteredSubcats.length > 0) {
+            $.each(filteredSubcats, function(index, sub) {
+                $subCatSelect.append('<option value="' + sub.id + '">' + sub.subcategory_name + '</option>');
+            });
+            $subCatSelect.prop('disabled', false);
+        } else {
+            $subCatSelect.append('<option value="">-- No Subcategories Found --</option>').prop('disabled', true);
+        }
+    }
+
+    function onSubcategoryChange() {
+        var catId = $('#sel_category').val();
+        var subId = $('#sel_subcategory').val();
+        var $prodSelect = $('#sel_product');
+
+        $prodSelect.empty().append('<option value="">-- Select Product --</option>');
+        $('#sel_price').val('');
+        $('#sel_qty').val(1);
+
+        if(!subId) {
+            $prodSelect.empty().append('<option value="">-- Select Sub Category First --</option>').prop('disabled', true);
+            return;
+        }
+
+        var filteredProducts = allProducts.filter(function(prod) {
+            return prod.category_id == catId && prod.subcategory_id == subId;
+        });
+
+        if(filteredProducts.length > 0) {
+            $.each(filteredProducts, function(index, prod) {
+                var priceDisplay = prod.selling_price ? parseFloat(prod.selling_price).toFixed(2) : '0.00';
+                $prodSelect.append('<option value="' + prod.id + '" data-price="' + prod.selling_price + '">' + prod.product_name + ' (₹' + priceDisplay + ')</option>');
+            });
+            $prodSelect.prop('disabled', false);
+        } else {
+            $prodSelect.append('<option value="">-- No Products Found in this Subcategory --</option>').prop('disabled', true);
+        }
+    }
+
+    function onProductSelectChange() {
+        var selectedOption = $('#sel_product').find('option:selected');
+        var price = selectedOption.data('price') || 0;
+        $('#sel_price').val(parseFloat(price).toFixed(2));
+        if(!$('#sel_qty').val() || $('#sel_qty').val() < 1) {
+            $('#sel_qty').val(1);
+        }
+    }
+
+    function addProductFromSelector() {
+        var prodId = $('#sel_product').val();
+        if(!prodId) {
+            if(typeof swal === 'function') {
+                swal("Required", "Please select a Category, Sub Category, and Product first.", "warning");
+            } else {
+                alert("Please select a Category, Sub Category, and Product first.");
+            }
+            return;
+        }
+
+        var price = parseFloat($('#sel_price').val()) || 0;
+        var qty = parseInt($('#sel_qty').val()) || 1;
+        if(qty < 1) qty = 1;
+
+        // Check if already added in table
+        var existingRow = $('input.row-product-id[value="' + prodId + '"]').closest('tr.product-row');
+        if(existingRow.length > 0) {
+            // Increment quantity on existing row!
+            var currentQtyInput = existingRow.find('.product-qty');
+            var newQty = (parseInt(currentQtyInput.val()) || 0) + qty;
+            currentQtyInput.val(newQty);
+            calculateRow(existingRow);
+
+            // Reset product dropdown and price, keep category and subcategory selected!
+            $('#sel_product').val('');
+            $('#sel_price').val('');
+            $('#sel_qty').val(1);
+
+            if(typeof swal === 'function') {
+                swal("Quantity Updated", "Product is already in the list. Quantity increased to " + newQty + ".", "info");
+            }
+            return;
+        }
+
+        var selectedProduct = allProducts.find(function(p) { return p.id == prodId; });
+        var productName = selectedProduct ? selectedProduct.product_name : $('#sel_product option:selected').text();
+        var catName = $('#sel_category option:selected').text();
+        var subcatName = $('#sel_subcategory option:selected').text();
+
+        appendRowToTable(prodId, productName, catName, subcatName, price, qty);
+
+        // Reset product dropdown and price, keep Category & Subcategory selected for easy multiple addition!
+        $('#sel_product').val('');
+        $('#sel_price').val('');
+        $('#sel_qty').val(1);
+    }
+
+    function appendRowToTable(prodId, productName, catName, subcatName, price, qty) {
+        $('#emptyRowPlaceholder').hide();
+        var rowId = 'row_' + rowCounter;
+        var subtotal = (price * qty).toFixed(2);
+
+        var html = '<tr id="' + rowId + '" class="product-row">' +
             '<td>' +
-                '<select name="products[' + rowCounter + '][product_id]" class="form-control product-select" required onchange="onProductChange(this, ' + rowCounter + ')">' +
-                    optionsHtml +
-                '</select>' +
+                '<div class="text-semibold text-primary" style="font-size: 13.5px;">' + productName + '</div>' +
+                '<div style="margin-top: 4px;">' +
+                    (catName ? '<span class="label label-default" style="margin-right: 4px; font-size: 10px;">' + catName + '</span>' : '') +
+                    (subcatName ? '<span class="label label-info" style="font-size: 10px;">' + subcatName + '</span>' : '') +
+                '</div>' +
+                '<input type="hidden" class="row-product-id" name="products[' + rowCounter + '][product_id]" value="' + prodId + '">' +
             '</td>' +
             '<td>' +
-                '<div class="input-group">' +
+                '<div class="input-group input-group-sm">' +
                     '<span class="input-group-addon">₹</span>' +
-                    '<input type="number" step="0.01" min="0" name="products[' + rowCounter + '][price]" class="form-control product-price" required oninput="calculateRow(' + rowCounter + ')" value="' + initialPrice + '">' +
+                    '<input type="number" step="0.01" min="0" name="products[' + rowCounter + '][price]" class="form-control product-price" required value="' + parseFloat(price).toFixed(2) + '" oninput="calculateRow(this)">' +
                 '</div>' +
             '</td>' +
             '<td>' +
-                '<input type="number" min="1" name="products[' + rowCounter + '][quantity]" class="form-control product-qty" required value="' + initialQty + '" oninput="calculateRow(' + rowCounter + ')">' +
+                '<input type="number" min="1" name="products[' + rowCounter + '][quantity]" class="form-control input-sm product-qty" required value="' + qty + '" oninput="calculateRow(this)">' +
             '</td>' +
             '<td>' +
-                '<strong class="product-subtotal-text">₹0.00</strong>' +
-                '<input type="hidden" class="product-subtotal-val" value="0">' +
+                '<strong class="product-subtotal-text">₹' + subtotal + '</strong>' +
+                '<input type="hidden" class="product-subtotal-val" value="' + subtotal + '">' +
             '</td>' +
             '<td class="text-center">' +
-                '<button type="button" class="btn btn-xs btn-danger" onclick="removeRow(\'' + rowId + '\')"><i class="icon-cross2"></i></button>' +
+                '<button type="button" class="btn btn-xs btn-danger" onclick="removeRow(\'' + rowId + '\')" title="Remove"><i class="icon-trash"></i></button>' +
             '</td>' +
         '</tr>';
 
         $('#productRowsContainer').append(html);
-
-        if(selectedId) {
-            $('#' + rowId + ' .product-select').val(selectedId);
-        }
-
         rowCounter++;
         calculateGrandTotal();
     }
 
-    function onProductChange(selectElement, rowIndex) {
-        var selectedOption = $(selectElement).find('option:selected');
-        var price = selectedOption.data('price') || 0;
-        var row = $(selectElement).closest('tr');
-        row.find('.product-price').val(price);
-        calculateRow(rowIndex);
-    }
-
-    function calculateRow(rowIndex) {
-        var row = $('input[name="products[' + rowIndex + '][price]"]').closest('tr');
+    function calculateRow(element) {
+        var row = $(element).closest('tr.product-row');
         var price = parseFloat(row.find('.product-price').val()) || 0;
         var qty = parseInt(row.find('.product-qty').val()) || 0;
         var subtotal = price * qty;
@@ -251,17 +412,25 @@
     }
 
     function removeRow(rowId) {
-        if($('#productRowsContainer tr').length <= 1) {
-            swal("Notice", "An inquiry must have at least one product.", "warning");
-            return;
-        }
         $('#' + rowId).remove();
+        if($('.product-row').length === 0) {
+            $('#emptyRowPlaceholder').show();
+        }
         calculateGrandTotal();
     }
 
     $(document).ready(function() {
-        // Add one empty product row by default
-        addProductRow();
+        $('#inquiryForm').on('submit', function(e) {
+            if($('.product-row').length === 0) {
+                e.preventDefault();
+                if(typeof swal === 'function') {
+                    swal("Notice", "Please add at least one product to the inquiry.", "warning");
+                } else {
+                    alert("Please add at least one product to the inquiry.");
+                }
+                return false;
+            }
+        });
     });
 </script>
 @endsection

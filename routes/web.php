@@ -61,6 +61,7 @@ Route::match(['delete', 'post'], '/cart/remove/{id}', [FrontProductController::c
 Route::get('/checkout', [FrontProductController::class, 'checkout'])->name('front.checkout');
 Route::post('/checkout/submit', [FrontProductController::class, 'submitCheckout'])->name('front.checkout.submit');
 Route::get('/order/success/{order_no}', [FrontProductController::class, 'orderSuccess'])->name('front.order.success');
+Route::get('/order/{order_no}/pdf', [FrontProductController::class, 'generateOrderPdf'])->name('front.order.pdf');
 Route::get('/wishlist', [FrontController::class, 'wishlist'])->name('front.wishlist');
 
 // Clean dynamic page loader for any future pages
@@ -275,6 +276,7 @@ Route::group(['middleware' => ['auth', 'usersession']], function () {
     // Orders Routes (Both Superadmin & Seller)
     Route::get('admin/order', [AdminOrderController::class, 'index'])->name('admin.order.index');
     Route::get('admin/order/show/{id}', [AdminOrderController::class, 'show'])->name('admin.order.show');
+    Route::get('admin/order/{id}/pdf', [AdminOrderController::class, 'generateOrderPdf'])->name('admin.order.pdf');
     Route::patch('admin/order/update-status/{id}', [AdminOrderController::class, 'updateStatus'])->name('admin.order.update_status');
     Route::post('admin/order/bulk-assign', [AdminOrderController::class, 'bulkAssign'])->name('admin.order.bulk_assign');
     Route::post('admin/order/{id}/apply-coupon', [AdminOrderController::class, 'applyCoupon'])->name('admin.order.apply_coupon');
