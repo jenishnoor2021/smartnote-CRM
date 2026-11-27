@@ -419,12 +419,12 @@
         @if($inquiry->items && $inquiry->items->count() > 0)
             @foreach($inquiry->items as $item)
                 appendRowToTable(
-                    {{ $item->product_id }},
-                    @json($item->product ? $item->product->product_name : ($item->product_name ?? 'Product #'.$item->product_id)),
+                    {{ intval($item->product_id ?? 0) }},
+                    @json($item->product ? $item->product->product_name : ($item->product_name ?? 'Product #'.($item->product_id ?? 0))),
                     @json($item->product && $item->product->category ? $item->product->category->category_name : ''),
                     @json($item->product && $item->product->subcategory ? $item->product->subcategory->subcategory_name : ''),
-                    {{ $item->price }},
-                    {{ $item->quantity }}
+                    {{ floatval($item->price ?? 0) }},
+                    {{ intval($item->quantity ?? 1) }}
                 );
             @endforeach
         @endif

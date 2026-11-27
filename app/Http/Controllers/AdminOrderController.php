@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\SiteSetting;
+use App\Models\SubCategory;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class AdminOrderController extends Controller
@@ -70,7 +75,7 @@ class AdminOrderController extends Controller
     public function show($id)
     {
         $user = Auth::user();
-        $order = Order::with(['items.product', 'seller', 'coupon', 'inquiry'])
+        $order = Order::with(['items.product.category', 'items.product.subcategory', 'seller', 'coupon', 'inquiry'])
             ->findOrFail($id);
 
         if ($user->isSeller() && $order->seller_id !== $user->id) {
@@ -78,8 +83,11 @@ class AdminOrderController extends Controller
         }
 
         $sellers = User::where('role', 'seller')->where('is_active', 1)->orderBy('name', 'ASC')->get();
+        $categories = Category::where('is_active', 1)->orderBy('sort_order', 'ASC')->orderBy('category_name', 'ASC')->get();
+        $subcategories = SubCategory::where('is_active', 1)->orderBy('sort_order', 'ASC')->orderBy('subcategory_name', 'ASC')->get();
+        $products = Product::where('is_active', 1)->orderBy('product_name', 'ASC')->get();
 
-        return view('admin.order.show', compact('order', 'sellers'));
+        return view('admin.order.show', compact('order', 'sellers', 'categories', 'subcategories', 'products'));
     }
 
     /**
@@ -537,6 +545,119 @@ class AdminOrderController extends Controller
         }
 
         return $pdf->download($filename);
+    }
+
+    /**
+     * Update order items and recalculate totals (Allowed ONLY if order is pending and not paid)
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateItems(Request $request, $id)
+    {
+        $user = Auth::user();
+        $order = Order::with(['coupon', 'items'])->findOrFail($id);
+
+        if ($user->isSeller() && $order->seller_id !== $user->id) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized access.'], 403);
+        }
+
+        // STRICT CONDITION: Only when order is pending and unpaid!
+        if ($order->order_status !== 'pending' || $order->payment_status === 'paid') {
+            return response()->json([
+                'status' => false,
+                'message' => 'Order cannot be edited once it is confirmed, processing, or paid. Only pending & unpaid orders can be modified.'
+            ], 422);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'products' => 'required|array|min:1',
+            'products.*.product_id' => 'required|integer|exists:products,id',
+            'products.*.quantity' => 'required|integer|min:1',
+            'products.*.price' => 'required|numeric|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Delete old items and re-insert new items
+            OrderItem::where('order_id', $order->id)->delete();
+            $subtotal = 0;
+
+            foreach ($request->products as $item) {
+                $product = Product::find($item['product_id']);
+                $price = floatval($item['price']);
+                $qty = intval($item['quantity']);
+                $itemSubtotal = round($price * $qty, 2);
+                $subtotal += $itemSubtotal;
+
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $product->id,
+                    'product_name' => $product->product_name,
+                    'price' => $price,
+                    'quantity' => $qty,
+                    'subtotal' => $itemSubtotal,
+                ]);
+            }
+
+            // Recalculate discount if coupon applied
+            $discount = 0;
+            if ($order->coupon_id) {
+                $coupon = Coupon::find($order->coupon_id);
+                if ($coupon) {
+                    if ($coupon->min_order_amount > 0 && $subtotal < $coupon->min_order_amount) {
+                        // Min order amount not reached anymore
+                        $coupon->update(['is_used' => 0, 'order_id' => null]);
+                        $order->coupon_id = null;
+                        $order->coupon_code = null;
+                        $order->discount_amount = 0;
+                    } else {
+                        $discount = $coupon->calculateDiscount($subtotal);
+                        $order->discount_amount = $discount;
+                    }
+                }
+            }
+
+            $newTotal = max(0, $subtotal - $discount);
+
+            // Update order totals
+            $order->subtotal = $subtotal;
+            $order->total_amount = $newTotal;
+
+            // If a previous payment link existed for old amount, reset it so new link can be generated
+            if ($order->payment_link) {
+                $order->payment_link = null;
+                $order->payment_status = 'pending';
+            }
+
+            $currentNotes = $order->notes ? $order->notes . "\n" : "";
+            $order->notes = $currentNotes . "[" . date('d-m-Y h:i A') . "] Products/quantities updated by " . $user->name . ". New Total: ₹" . number_format($newTotal, 2);
+            $order->save();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Order products and totals updated successfully!',
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'total' => $newTotal,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Error updating order items: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
 

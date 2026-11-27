@@ -277,6 +277,7 @@ Route::group(['middleware' => ['auth', 'usersession']], function () {
     Route::get('admin/order', [AdminOrderController::class, 'index'])->name('admin.order.index');
     Route::get('admin/order/show/{id}', [AdminOrderController::class, 'show'])->name('admin.order.show');
     Route::get('admin/order/{id}/pdf', [AdminOrderController::class, 'generateOrderPdf'])->name('admin.order.pdf');
+    Route::post('admin/order/{id}/update-items', [AdminOrderController::class, 'updateItems'])->name('admin.order.update_items');
     Route::patch('admin/order/update-status/{id}', [AdminOrderController::class, 'updateStatus'])->name('admin.order.update_status');
     Route::post('admin/order/bulk-assign', [AdminOrderController::class, 'bulkAssign'])->name('admin.order.bulk_assign');
     Route::post('admin/order/{id}/apply-coupon', [AdminOrderController::class, 'applyCoupon'])->name('admin.order.apply_coupon');

@@ -97,8 +97,41 @@
                         </div>
                     </div>
 
-                    <!-- Items Table -->
-                    <div class="table-responsive">
+                    @php
+                        $canEditOrderItems = ($order->order_status === 'pending' && $order->payment_status !== 'paid');
+                    @endphp
+
+                    <!-- Items Header & Quick Edit Toggle Button -->
+                    <div class="row" style="margin-bottom: 12px;">
+                        <div class="col-xs-7">
+                            <h6 class="text-semibold" style="margin: 0; padding-top: 5px;">
+                                <i class="icon-books position-left"></i> Products in this Order
+                            </h6>
+                        </div>
+                        <div class="col-xs-5 text-right">
+                            @if($canEditOrderItems)
+                                <button type="button" class="btn btn-xs btn-primary text-semibold" id="btnToggleEditItems" onclick="enableOrderEditMode()">
+                                    <i class="icon-pencil7 position-left"></i> Edit Products / Qty
+                                </button>
+                                <button type="button" class="btn btn-xs btn-default text-semibold" id="btnCancelEditItems" style="display: none;" onclick="cancelOrderEditMode()">
+                                    <i class="icon-cross2 position-left"></i> Cancel Edit
+                                </button>
+                            @else
+                                @if($order->payment_status === 'paid')
+                                    <span class="label label-success" title="Paid orders cannot be edited">
+                                        <i class="icon-lock2 position-left"></i> Paid (Locked)
+                                    </span>
+                                @else
+                                    <span class="label label-default" title="Orders that are {{ ucfirst($order->order_status) }} cannot be edited">
+                                        <i class="icon-lock2 position-left"></i> {{ ucfirst($order->order_status) }} (Locked)
+                                    </span>
+                                @endif
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- VIEW MODE: Standard Read-only Items Table -->
+                    <div id="orderItemsViewContainer" class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr class="bg-slate-600">
@@ -115,6 +148,16 @@
                                         <strong>{{ $item->product_name }}</strong>
                                         @if($item->product && $item->product->product_code)
                                             <div class="text-muted text-size-mini">Code: {{ $item->product->product_code }}</div>
+                                        @endif
+                                        @if($item->product && ($item->product->category || $item->product->subcategory))
+                                            <div style="margin-top: 3px;">
+                                                @if($item->product->category)
+                                                    <span class="label label-default" style="font-size: 9.5px; padding: 1px 5px;">{{ $item->product->category->category_name }}</span>
+                                                @endif
+                                                @if($item->product->subcategory)
+                                                    <span class="label label-info" style="font-size: 9.5px; padding: 1px 5px;">{{ $item->product->subcategory->subcategory_name }}</span>
+                                                @endif
+                                            </div>
                                         @endif
                                     </td>
                                     <td class="text-right">₹{{ number_format($item->price, 2) }}</td>
@@ -143,6 +186,135 @@
                             </tfoot>
                         </table>
                     </div>
+
+                    @if($canEditOrderItems)
+                    <!-- EDIT MODE: Interactive Option 1 Panel (Category/Subcategory Selector + Editable Table) -->
+                    <div id="orderItemsEditContainer" style="display: none;">
+                        
+                        <!-- Top Selector Box -->
+                        <div class="well well-sm" style="background-color: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h6 class="text-semibold text-primary" style="margin-top: 0; margin-bottom: 12px;">
+                                        <i class="icon-filter3 position-left"></i> Add Product by Category &amp; Sub Category
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group mb-10">
+                                        <label class="text-semibold text-size-small"><span class="text-danger">*</span> Category:</label>
+                                        <select id="edit_sel_category" class="form-control" onchange="onOrderCategoryChange()">
+                                            <option value="">-- Select Category --</option>
+                                            @foreach($categories as $cat)
+                                                <option value="{{ $cat->id }}">{{ $cat->category_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group mb-10">
+                                        <label class="text-semibold text-size-small"><span class="text-danger">*</span> Sub Category:</label>
+                                        <select id="edit_sel_subcategory" class="form-control" disabled onchange="onOrderSubcategoryChange()">
+                                            <option value="">-- Select Category First --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group mb-10">
+                                        <label class="text-semibold text-size-small"><span class="text-danger">*</span> Product / Book:</label>
+                                        <select id="edit_sel_product" class="form-control" disabled onchange="onOrderProductSelectChange()">
+                                            <option value="">-- Select Sub Category First --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 6px;">
+                                <div class="col-xs-6 col-sm-4">
+                                    <div class="form-group mb-0">
+                                        <label class="text-semibold text-size-small">Price (₹):</label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">₹</span>
+                                            <input type="number" id="edit_sel_price" class="form-control text-semibold" step="0.01" min="0" placeholder="0.00">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-sm-3">
+                                    <div class="form-group mb-0">
+                                        <label class="text-semibold text-size-small">Quantity:</label>
+                                        <input type="number" id="edit_sel_qty" class="form-control text-semibold" min="1" value="1">
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-5" style="margin-top: 25px;">
+                                    <button type="button" class="btn btn-primary btn-block text-semibold" onclick="addProductToOrderTable()">
+                                        <i class="icon-plus22 position-left"></i> Add to Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Editable Products Table -->
+                        <form id="orderItemsEditForm">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped" id="orderEditTable">
+                                    <thead>
+                                        <tr class="bg-slate-600">
+                                            <th width="42%">Product Details</th>
+                                            <th width="20%">Price (₹)</th>
+                                            <th width="15%">Qty</th>
+                                            <th width="18%">Subtotal (₹)</th>
+                                            <th width="5%" class="text-center"><i class="icon-trash"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="orderEditRowsContainer">
+                                        <!-- Dynamic Editable Rows -->
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="3" class="text-right text-semibold">Subtotal:</th>
+                                            <th colspan="2" class="text-right text-bold">
+                                                ₹<span id="editSubtotalDisplay">{{ number_format($order->subtotal, 2) }}</span>
+                                            </th>
+                                        </tr>
+                                        @if($order->coupon_id && $order->coupon)
+                                        <tr class="text-success" id="editCouponRow">
+                                            <th colspan="3" class="text-right text-semibold">
+                                                <i class="icon-price-tag2 position-left"></i> Coupon Discount ({{ $order->coupon_code }}):
+                                            </th>
+                                            <th colspan="2" class="text-right text-bold">
+                                                -₹<span id="editDiscountDisplay">{{ number_format($order->discount_amount, 2) }}</span>
+                                            </th>
+                                        </tr>
+                                        @endif
+                                        <tr class="bg-slate-100">
+                                            <th colspan="3" class="text-right text-semibold">Grand Total:</th>
+                                            <th colspan="2" class="text-primary text-bold" style="font-size: 16px;">
+                                                ₹<span id="editGrandTotalDisplay">{{ number_format($order->total_amount, 2) }}</span>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <div class="alert alert-info" style="margin-top: 15px; padding: 10px 15px;">
+                                <i class="icon-info22 position-left"></i> 
+                                <strong>Notice:</strong> Saving changes will update the order totals. If a Razorpay payment link was previously generated, it will be reset so you can send a new link with the updated amount.
+                            </div>
+
+                            <div class="text-right" style="margin-top: 15px;">
+                                <button type="button" class="btn btn-default" onclick="cancelOrderEditMode()">
+                                    <i class="icon-cross2 position-left"></i> Cancel
+                                </button>
+                                <button type="button" class="btn btn-success btn-labeled btn-labeled-right" id="btnSaveOrderItems" onclick="saveOrderItems()">
+                                    <b><i class="icon-check"></i></b> Save Changes &amp; Recalculate
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    @endif
 
                     @if($order->notes)
                         <div class="well well-sm" style="margin-top: 20px; background-color: #f8fafc;">
@@ -584,5 +756,295 @@
             $('#copyText').text('Copy');
         }, 2000);
     }
+
+@if($canEditOrderItems)
+    var allOrderSubcategories = @json($subcategories ?? []);
+    var allOrderProducts = @json($products ?? []);
+    var orderCoupon = @json($order->coupon ?? null);
+    var orderRowCounter = 0;
+    var initialOrderItems = [
+        @if($order->items && $order->items->count() > 0)
+            @foreach($order->items as $item)
+            {
+                product_id: {{ intval($item->product_id ?? 0) }},
+                product_name: @json($item->product ? $item->product->product_name : ($item->product_name ?? 'Product')),
+                category_name: @json(($item->product && $item->product->category) ? $item->product->category->category_name : ''),
+                subcategory_name: @json(($item->product && $item->product->subcategory) ? $item->product->subcategory->subcategory_name : ''),
+                price: {{ floatval($item->price ?? 0) }},
+                quantity: {{ intval($item->quantity ?? 1) }}
+            },
+            @endforeach
+        @endif
+    ];
+
+    function enableOrderEditMode() {
+        $('#orderItemsViewContainer').hide();
+        $('#orderItemsEditContainer').slideDown(250);
+        $('#btnToggleEditItems').hide();
+        $('#btnCancelEditItems').show();
+
+        // Populate initial rows only if empty
+        if($('#orderEditRowsContainer tr.product-row-edit').length === 0) {
+            initOrderEditRows();
+        }
+    }
+
+    function cancelOrderEditMode() {
+        $('#orderItemsEditContainer').hide();
+        $('#orderItemsViewContainer').show();
+        $('#btnToggleEditItems').show();
+        $('#btnCancelEditItems').hide();
+        initOrderEditRows();
+    }
+
+    function initOrderEditRows() {
+        $('#orderEditRowsContainer').empty();
+        orderRowCounter = 0;
+        if (typeof initialOrderItems !== 'undefined' && initialOrderItems.length > 0) {
+            $.each(initialOrderItems, function(index, item) {
+                appendOrderEditRow(
+                    item.product_id,
+                    item.product_name,
+                    item.category_name,
+                    item.subcategory_name,
+                    item.price,
+                    item.quantity
+                );
+            });
+        }
+    }
+
+    function onOrderCategoryChange() {
+        var catId = $('#edit_sel_category').val();
+        var $subCatSelect = $('#edit_sel_subcategory');
+        var $prodSelect = $('#edit_sel_product');
+
+        $subCatSelect.empty().append('<option value="">-- Select Sub Category --</option>');
+        $prodSelect.empty().append('<option value="">-- Select Sub Category First --</option>').prop('disabled', true);
+        $('#edit_sel_price').val('');
+        $('#edit_sel_qty').val(1);
+
+        if(!catId) {
+            $subCatSelect.empty().append('<option value="">-- Select Category First --</option>').prop('disabled', true);
+            return;
+        }
+
+        var filteredSubcats = allOrderSubcategories.filter(function(sub) {
+            return sub.category_id == catId;
+        });
+
+        if(filteredSubcats.length > 0) {
+            $.each(filteredSubcats, function(index, sub) {
+                $subCatSelect.append('<option value="' + sub.id + '">' + sub.subcategory_name + '</option>');
+            });
+            $subCatSelect.prop('disabled', false);
+        } else {
+            $subCatSelect.append('<option value="">-- No Subcategories Found --</option>').prop('disabled', true);
+        }
+    }
+
+    function onOrderSubcategoryChange() {
+        var catId = $('#edit_sel_category').val();
+        var subId = $('#edit_sel_subcategory').val();
+        var $prodSelect = $('#edit_sel_product');
+
+        $prodSelect.empty().append('<option value="">-- Select Product --</option>');
+        $('#edit_sel_price').val('');
+        $('#edit_sel_qty').val(1);
+
+        if(!subId) {
+            $prodSelect.empty().append('<option value="">-- Select Sub Category First --</option>').prop('disabled', true);
+            return;
+        }
+
+        var filteredProducts = allOrderProducts.filter(function(prod) {
+            return prod.category_id == catId && prod.subcategory_id == subId;
+        });
+
+        if(filteredProducts.length > 0) {
+            $.each(filteredProducts, function(index, prod) {
+                var priceDisplay = prod.selling_price ? parseFloat(prod.selling_price).toFixed(2) : '0.00';
+                $prodSelect.append('<option value="' + prod.id + '" data-price="' + prod.selling_price + '">' + prod.product_name + ' (₹' + priceDisplay + ')</option>');
+            });
+            $prodSelect.prop('disabled', false);
+        } else {
+            $prodSelect.append('<option value="">-- No Products Found in this Subcategory --</option>').prop('disabled', true);
+        }
+    }
+
+    function onOrderProductSelectChange() {
+        var selectedOption = $('#edit_sel_product').find('option:selected');
+        var price = selectedOption.data('price') || 0;
+        $('#edit_sel_price').val(parseFloat(price).toFixed(2));
+        if(!$('#edit_sel_qty').val() || $('#edit_sel_qty').val() < 1) {
+            $('#edit_sel_qty').val(1);
+        }
+    }
+
+    function addProductToOrderTable() {
+        var prodId = $('#edit_sel_product').val();
+        if(!prodId) {
+            swal("Required", "Please select a Category, Sub Category, and Product first.", "warning");
+            return;
+        }
+
+        var price = parseFloat($('#edit_sel_price').val()) || 0;
+        var qty = parseInt($('#edit_sel_qty').val()) || 1;
+        if(qty < 1) qty = 1;
+
+        // Check if already in table
+        var existingRow = $('input.order-row-prod-id[value="' + prodId + '"]').closest('tr.product-row-edit');
+        if(existingRow.length > 0) {
+            var currentQtyInput = existingRow.find('.order-row-qty');
+            var newQty = (parseInt(currentQtyInput.val()) || 0) + qty;
+            currentQtyInput.val(newQty);
+            calculateOrderRow(existingRow);
+
+            $('#edit_sel_product').val('');
+            $('#edit_sel_price').val('');
+            $('#edit_sel_qty').val(1);
+
+            swal("Quantity Updated", "Product is already in the order. Quantity increased to " + newQty + ".", "info");
+            return;
+        }
+
+        var selectedProduct = allOrderProducts.find(function(p) { return p.id == prodId; });
+        var productName = selectedProduct ? selectedProduct.product_name : $('#edit_sel_product option:selected').text();
+        var catName = $('#edit_sel_category option:selected').text();
+        var subcatName = $('#edit_sel_subcategory option:selected').text();
+
+        appendOrderEditRow(prodId, productName, catName, subcatName, price, qty);
+
+        $('#edit_sel_product').val('');
+        $('#edit_sel_price').val('');
+        $('#edit_sel_qty').val(1);
+    }
+
+    function appendOrderEditRow(prodId, productName, catName, subcatName, price, qty) {
+        var rowId = 'order_edit_row_' + orderRowCounter;
+        var subtotal = (price * qty).toFixed(2);
+
+        var html = '<tr id="' + rowId + '" class="product-row-edit">' +
+            '<td>' +
+                '<div class="text-semibold text-primary" style="font-size: 13px;">' + productName + '</div>' +
+                '<div style="margin-top: 3px;">' +
+                    (catName ? '<span class="label label-default" style="margin-right: 4px; font-size: 9.5px;">' + catName + '</span>' : '') +
+                    (subcatName ? '<span class="label label-info" style="font-size: 9.5px;">' + subcatName + '</span>' : '') +
+                '</div>' +
+                '<input type="hidden" class="order-row-prod-id" name="products[' + orderRowCounter + '][product_id]" value="' + prodId + '">' +
+            '</td>' +
+            '<td>' +
+                '<div class="input-group input-group-sm">' +
+                    '<span class="input-group-addon">₹</span>' +
+                    '<input type="number" step="0.01" min="0" name="products[' + orderRowCounter + '][price]" class="form-control order-row-price" required value="' + parseFloat(price).toFixed(2) + '" oninput="calculateOrderRow(this)">' +
+                '</div>' +
+            '</td>' +
+            '<td>' +
+                '<input type="number" min="1" name="products[' + orderRowCounter + '][quantity]" class="form-control input-sm order-row-qty" required value="' + qty + '" oninput="calculateOrderRow(this)">' +
+            '</td>' +
+            '<td>' +
+                '<strong class="order-row-subtotal-text">₹' + subtotal + '</strong>' +
+                '<input type="hidden" class="order-row-subtotal-val" value="' + subtotal + '">' +
+            '</td>' +
+            '<td class="text-center">' +
+                '<button type="button" class="btn btn-xs btn-danger" onclick="removeOrderEditRow(\'' + rowId + '\')" title="Remove"><i class="icon-trash"></i></button>' +
+            '</td>' +
+        '</tr>';
+
+        $('#orderEditRowsContainer').append(html);
+        orderRowCounter++;
+        calculateOrderTotals();
+    }
+
+    function calculateOrderRow(element) {
+        var row = $(element).closest('tr.product-row-edit');
+        var price = parseFloat(row.find('.order-row-price').val()) || 0;
+        var qty = parseInt(row.find('.order-row-qty').val()) || 0;
+        var subtotal = price * qty;
+
+        row.find('.order-row-subtotal-text').text('₹' + subtotal.toFixed(2));
+        row.find('.order-row-subtotal-val').val(subtotal);
+
+        calculateOrderTotals();
+    }
+
+    function calculateOrderTotals() {
+        var subtotal = 0;
+        $('.order-row-subtotal-val').each(function() {
+            subtotal += parseFloat($(this).val()) || 0;
+        });
+
+        $('#editSubtotalDisplay').text(subtotal.toFixed(2));
+
+        var discount = 0;
+        if(orderCoupon) {
+            if(orderCoupon.min_order_amount > 0 && subtotal < orderCoupon.min_order_amount) {
+                discount = 0;
+            } else if(orderCoupon.discount_type === 'percentage') {
+                discount = (subtotal * orderCoupon.discount_value) / 100;
+                if(orderCoupon.max_discount_amount > 0 && discount > orderCoupon.max_discount_amount) {
+                    discount = orderCoupon.max_discount_amount;
+                }
+            } else {
+                discount = Math.min(subtotal, orderCoupon.discount_value);
+            }
+        }
+
+        $('#editDiscountDisplay').text(discount.toFixed(2));
+        var grandTotal = Math.max(0, subtotal - discount);
+        $('#editGrandTotalDisplay').text(grandTotal.toFixed(2));
+    }
+
+    function removeOrderEditRow(rowId) {
+        if($('tr.product-row-edit').length <= 1) {
+            swal("Warning", "An order must contain at least one product.", "warning");
+            return;
+        }
+        $('#' + rowId).remove();
+        calculateOrderTotals();
+    }
+
+    function saveOrderItems() {
+        if($('tr.product-row-edit').length === 0) {
+            swal("Required", "An order must contain at least one product.", "warning");
+            return;
+        }
+
+        var btn = $('#btnSaveOrderItems');
+        var originalHtml = btn.html();
+        btn.prop('disabled', true).html('<i class="icon-spinner2 spinner position-left"></i> Saving...');
+
+        var formData = $('#orderItemsEditForm').serialize();
+
+        $.ajax({
+            url: "{{ route('admin.order.update_items', $order->id) }}",
+            type: "POST",
+            data: formData,
+            success: function(response) {
+                btn.prop('disabled', false).html(originalHtml);
+                if(response.status) {
+                    swal({
+                        title: "Updated Successfully!",
+                        text: response.message,
+                        type: "success"
+                    }, function() {
+                        location.reload();
+                    });
+                } else {
+                    swal("Error", response.message, "error");
+                }
+            },
+            error: function(xhr) {
+                btn.prop('disabled', false).html(originalHtml);
+                var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : "Error saving order items.";
+                swal("Failed", msg, "error");
+            }
+        });
+    }
+@else
+    function enableOrderEditMode() {
+        swal("Locked", "This order cannot be edited because it is confirmed, processing, or paid.", "warning");
+    }
+@endif
 </script>
 @endsection
